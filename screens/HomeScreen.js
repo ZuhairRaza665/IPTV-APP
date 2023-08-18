@@ -24,7 +24,7 @@ const HomeScreen = ({ navigation }) => {
 
     const randomIndexes = getRandomIndexes(movies.length, 30);
     const randomMovies = randomIndexes.map((index) => movies[index]);
-    setRandomMovie(randomMovies);
+    setRandomMovie(randomMovies.slice(0, 30));
   }, []);
   return (
     <ScrollView style={styles.container}>
@@ -33,13 +33,13 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.text}>Continue Watching</Text>
       </View>
       <View style={{ top: "4%" }}>
-        <MovieCard navigation={navigation} direction={null} bigData={movies} />
+        <MovieCard navigation={navigation} direction={null} bigData={null} />
       </View>
       <View style={{ top: "7%" }}>
         <Text style={styles.text}>Explore</Text>
       </View>
       <View style={{ marginTop: "18%" }}>
-        <MovieCard navigation={navigation} direction={null} bigData={movies} />
+        <MovieCard navigation={navigation} direction={null} bigData={random} />
       </View>
       <Text> </Text>
       <Text> </Text>
