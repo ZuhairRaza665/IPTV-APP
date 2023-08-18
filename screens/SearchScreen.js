@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, StyleSheet, Switch, Text } from "react-native";
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  Switch,
+  Text,
+  ScrollView,
+} from "react-native";
 import MovieCard from "../MovieCard";
 import { movies, showsName } from "../api";
 import SwitchButton from "../SwitchButton";
@@ -11,6 +18,17 @@ const SearchScreen = ({ navigation }) => {
   useEffect(() => {
     handleSearch();
   }, [searchText, selectedIndex]);
+
+  function generateRandomIndexes(maxIndex, count) {
+    const indexes = [];
+    while (indexes.length < count) {
+      const randomIndex = Math.floor(Math.random() * maxIndex);
+      if (!indexes.includes(randomIndex)) {
+        indexes.push(randomIndex);
+      }
+    }
+    return indexes;
+  }
 
   const handleSearch = async () => {
     try {
@@ -28,7 +46,13 @@ const SearchScreen = ({ navigation }) => {
         console.log("TV");
       }
 
-      setSearchResults(filteredResults);
+      const randomIndexes = generateRandomIndexes(filteredResults.length, 40);
+      const randomResults = randomIndexes.map(
+        (index) => filteredResults[index]
+      );
+      setSearchResults(
+        searchText.length > 0 ? filteredResults : randomResults.slice(0, 40)
+      );
     } catch (error) {
       console.error("Error fetching data 3:", error);
       setSearchResults([]);
@@ -45,12 +69,15 @@ const SearchScreen = ({ navigation }) => {
         style={styles.text}
       />
       <SwitchButton setSelectedIndex={setSelectedIndex} />
-      <MovieCard
-        navigation={navigation}
-        direction="vertical"
-        numOfColmb={2}
-        bigData={searchResults}
-      />
+      <ScrollView style={{ top: 21 }}>
+        <MovieCard
+          navigation={navigation}
+          direction="vertical"
+          numOfColmb={2}
+          bigData={searchResults}
+        />
+        <Text style={{ fontSize: 40 }}>dgdg</Text>
+      </ScrollView>
     </View>
   );
 };

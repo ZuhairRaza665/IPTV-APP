@@ -1,6 +1,6 @@
 import MovieSlider from "../MovieSlider";
 import MovieCard from "../MovieCard";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { movies } from "../api";
 
@@ -27,15 +27,24 @@ const HomeScreen = ({ navigation }) => {
     setRandomMovie(randomMovies);
   }, []);
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View>
         <MovieSlider moviesData={random} />
         <Text style={styles.text}>Continue Watching</Text>
       </View>
-      <View style={styles.container2}>
+      <View style={{ top: "4%" }}>
         <MovieCard navigation={navigation} direction={null} bigData={movies} />
       </View>
-    </View>
+      <View style={{ top: "7%" }}>
+        <Text style={styles.text}>Explore</Text>
+      </View>
+      <View style={{ marginTop: "18%" }}>
+        <MovieCard navigation={navigation} direction={null} bigData={movies} />
+      </View>
+      <Text> </Text>
+      <Text> </Text>
+      <Text> </Text>
+    </ScrollView>
   );
 };
 
@@ -50,9 +59,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     top: "17%",
-  },
-  container2: {
-    top: "6%",
   },
 });
 
