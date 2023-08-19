@@ -3,9 +3,11 @@ import MovieCard from "../MovieCard";
 import { View, StyleSheet, Text, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { movies } from "../api";
+import { store } from "../redux/store";
 
 const HomeScreen = ({ navigation }) => {
   const [random, setRandomMovie] = useState([]);
+  const [likedItems, setLikedItems] = useState([]);
 
   useEffect(() => {
     function getRandomIndexes(length, count) {
@@ -25,16 +27,26 @@ const HomeScreen = ({ navigation }) => {
     const randomIndexes = getRandomIndexes(movies.length, 30);
     const randomMovies = randomIndexes.map((index) => movies[index]);
     setRandomMovie(randomMovies.slice(0, 30));
+    setLikedItems(store.getState().likedItems);
   }, []);
+
   return (
     <ScrollView style={styles.container}>
       <View>
         <MovieSlider moviesData={random} />
-        <Text style={styles.text}>Continue Watching</Text>
       </View>
-      <View style={{ top: "4%" }}>
-        <MovieCard navigation={navigation} direction={null} bigData={null} />
-      </View>
+      {likedItems.length > 0 && (
+        <View>
+          <Text style={styles.text}>Continue Watching</Text>
+          <View style={{ top: "13%" }}>
+            <MovieCard
+              navigation={navigation}
+              direction={null}
+              bigData={null}
+            />
+          </View>
+        </View>
+      )}
       <View style={{ top: "7%" }}>
         <Text style={styles.text}>Explore</Text>
       </View>

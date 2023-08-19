@@ -1,4 +1,6 @@
 import { movies } from "./api";
+import { store } from "./redux/store";
+import { addLikedMovies } from "./redux/actions";
 
 export const errorArray = [];
 
@@ -98,4 +100,15 @@ const fetchMovieDetails = async (item, movieID) => {
   } catch (error) {
     errorArray.push(item);
   }
+};
+
+export const getLikedData = async (likedList, dispatch) => {
+  const likedItems = store.getState().likedItems;
+  console.log("User's liked list in movie details:", likedList);
+  console.log("Initial redux in movie details:", likedItems);
+
+  console.log("dispatch from movies: ", dispatch);
+  const likedMovies = movies.filter((movie) => likedList.includes(movie.id));
+  console.log("Liked movies:", likedMovies);
+  dispatch(addLikedMovies(likedMovies));
 };

@@ -18,7 +18,7 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { fetchData, movies, showsName } from "../api";
-import { fData } from "../MovieDetailsRequest";
+import { fData, getLikedData } from "../MovieDetailsRequest";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   createUserWithEmailAndPassword,
@@ -30,6 +30,7 @@ import { addLikedItem } from "../redux/actions";
 
 import { auth, db } from "../firebase"; // Import the Firebase initialization
 import { collection, doc, getDocs, getDoc, setDoc } from "firebase/firestore"; // Import Firestore functions
+import { store } from "../redux/store";
 
 const LoginScreen = ({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -43,10 +44,13 @@ const LoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const likedItems = useSelector((state) => state.likedItems);
   const translateY = useSharedValue(0); // Initial position
+  const [userId, setUserId] = useState(null);
+  const [refresh, setRefresh] = useState(false);
 
-  // useEffect(() => {
-  //   console.log("Updated liked items in Redux store:", likedItems);
-  // }, [likedItems]);
+  useEffect(() => {
+    console.log("Liked array getting updated");
+    setRefresh(true);
+  }, [likedItems]);
 
   const handleLogin = async () => {
     const usernameIndex = textInputValue.indexOf("username=") + 9;
@@ -76,6 +80,9 @@ const LoginScreen = ({ navigation }) => {
       console.log("Done logging in");
       const userId = auth.currentUser.uid;
 
+      // Update the userId state with the authenticated user's ID
+      setUserId(userId);
+
       // Reference to the user's document
       const userDocRef = doc(db, "users", userId);
 
@@ -86,8 +93,12 @@ const LoginScreen = ({ navigation }) => {
         const userData = userDocSnapshot.data();
         const likedList = userData.liked || [];
 
-        console.log("User's liked list:", likedList);
-        dispatch(addLikedItem(likedList));
+        if (userId) {
+          await getLikedData(likedList, dispatch); // Pass the userId
+        }
+        console.log("User's liked list from login:", likedList);
+        console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
+        setloadingAnimation(false);
       } else {
         console.log("User document not found:", userId);
       }
@@ -178,8 +189,6 @@ const LoginScreen = ({ navigation }) => {
     } catch (error) {
       console.error("Error fetching or processing data:", error);
     }
-
-    setloadingAnimation(false);
   };
 
   const moveUp = () => {

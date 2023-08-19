@@ -1,5 +1,6 @@
 // reducers.js
 import { ADD_LIKED_ITEM, REMOVE_LIKED_ITEM } from "./actions";
+import { ADD_LIKED_MOVIES } from "./actions";
 
 const initialState = {
   likedItems: [],
@@ -7,6 +8,11 @@ const initialState = {
 
 const rootReducer = (state = initialState, action) => {
   switch (action.type) {
+    case ADD_LIKED_MOVIES:
+      return {
+        ...state,
+        likedItems: action.payload,
+      };
     case ADD_LIKED_ITEM:
       return {
         ...state,
