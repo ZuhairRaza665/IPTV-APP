@@ -109,6 +109,6 @@ export const getLikedData = async (likedList, dispatch) => {
 
   console.log("dispatch from movies: ", dispatch);
   const likedMovies = movies.filter((movie) => likedList.includes(movie.id));
-  console.log("Liked movies:", likedMovies);
+  console.log("Liked movies:", likedMovies[likedMovies.length - 1]);
   dispatch(addLikedMovies(likedMovies));
 };

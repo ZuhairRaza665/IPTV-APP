@@ -8,9 +8,10 @@ import { store } from "../redux/store";
 const HomeScreen = ({ navigation }) => {
   const [random, setRandomMovie] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
+  const [continueWatching, setContinueWatching] = useState([]);
 
   useEffect(() => {
-    function getRandomIndexes(length, count) {
+    const getRandomIndexes = (length, count) => {
       const indexes = [];
       while (indexes.length < count) {
         const randomIndex = Math.floor(Math.random() * length);
@@ -22,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
         }
       }
       return indexes;
-    }
+    };
 
     const randomIndexes = getRandomIndexes(movies.length, 30);
     const randomMovies = randomIndexes.map((index) => movies[index]);
@@ -35,7 +36,7 @@ const HomeScreen = ({ navigation }) => {
       <View>
         <MovieSlider moviesData={random} />
       </View>
-      {likedItems.length > 0 && (
+      {continueWatching.length > 0 && (
         <View>
           <Text style={styles.text}>Continue Watching</Text>
           <View style={{ top: "13%" }}>

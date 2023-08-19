@@ -1,60 +1,88 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Switch,
-  Text,
-  ScrollView,
-} from "react-native";
+import { View, TextInput, StyleSheet, Switch, Text } from "react-native";
 import MovieCard from "../MovieCard";
 import { movies, showsName } from "../api";
 import SwitchButton from "../SwitchButton";
+
+const generateRandomIndexes = (maxIndex, count) => {
+  const indexes = [];
+  while (indexes.length < count) {
+    const randomIndex = Math.floor(Math.random() * maxIndex);
+    if (!indexes.includes(randomIndex)) {
+      indexes.push(randomIndex);
+    }
+  }
+  return indexes;
+};
 
 const SearchScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [moviesDataCompleted, setMoviesDataCompleted] = useState(false);
+  const [showsDataCompleted, setShowsDataCompleted] = useState(false);
+  const [randomMoviesResults, setRandomMoviesResults] = useState([]);
+  const [randomShowsResults, setRandomShowsResults] = useState([]);
+
   useEffect(() => {
+    console.log("Selected Index:", selectedIndex);
     handleSearch();
   }, [searchText, selectedIndex]);
 
-  function generateRandomIndexes(maxIndex, count) {
-    const indexes = [];
-    while (indexes.length < count) {
-      const randomIndex = Math.floor(Math.random() * maxIndex);
-      if (!indexes.includes(randomIndex)) {
-        indexes.push(randomIndex);
-      }
-    }
-    return indexes;
-  }
-
   const handleSearch = async () => {
     try {
-      let filteredResults = [];
+      if (searchText.length === 0) {
+        if (selectedIndex === 0) {
+          if (!moviesDataCompleted) {
+            const randomIndexesMovies = generateRandomIndexes(
+              movies.length - 1,
+              40
+            );
+            const randomResultsMovies = randomIndexesMovies.map(
+              (index) => movies[index]
+            );
 
-      if (selectedIndex == 0) {
-        filteredResults = movies.filter((result) =>
-          result.title.toLowerCase().includes(searchText.toLowerCase())
-        );
-        console.log("Movies");
+            setRandomMoviesResults(randomResultsMovies);
+            setSearchResults(randomResultsMovies);
+            setMoviesDataCompleted(true);
+          } else {
+            console.log("where moviesDataCompleted");
+            setSearchResults(randomMoviesResults);
+          }
+        } else {
+          if (!showsDataCompleted) {
+            const randomIndexesShows = generateRandomIndexes(
+              showsName.length - 1,
+              40
+            );
+            const randomResultsShows = randomIndexesShows.map(
+              (index) => showsName[index]
+            );
+            setRandomShowsResults(randomResultsShows);
+            setShowsDataCompleted(true);
+            setSearchResults(randomResultsShows);
+          } else {
+            setSearchResults(randomShowsResults);
+          }
+        }
       } else {
-        filteredResults = showsName.filter((result) =>
-          result.title.toLowerCase().includes(searchText.toLowerCase())
-        );
-        console.log("TV");
+        // Code for filtering based on search text and selectedIndex
+        let filteredResults = [];
+        if (selectedIndex === 0) {
+          filteredResults = movies.filter((result) =>
+            result.title.toLowerCase().includes(searchText.toLowerCase())
+          );
+          console.log("Movies");
+        } else {
+          filteredResults = showsName.filter((result) =>
+            result.title.toLowerCase().includes(searchText.toLowerCase())
+          );
+          console.log("TV");
+        }
+        setSearchResults(filteredResults);
       }
-
-      const randomIndexes = generateRandomIndexes(filteredResults.length, 40);
-      const randomResults = randomIndexes.map(
-        (index) => filteredResults[index]
-      );
-      setSearchResults(
-        searchText.length > 0 ? filteredResults : randomResults.slice(0, 40)
-      );
     } catch (error) {
-      console.error("Error fetching data 3:", error);
+      console.error("Error fetching data:", error);
       setSearchResults([]);
     }
   };
@@ -69,15 +97,12 @@ const SearchScreen = ({ navigation }) => {
         style={styles.text}
       />
       <SwitchButton setSelectedIndex={setSelectedIndex} />
-      <ScrollView style={{ top: 21 }}>
-        <MovieCard
-          navigation={navigation}
-          direction="vertical"
-          numOfColmb={2}
-          bigData={searchResults}
-        />
-        <Text style={{ fontSize: 40 }}>dgdg</Text>
-      </ScrollView>
+      <MovieCard
+        navigation={navigation}
+        direction="vertical"
+        numOfColmb={2}
+        bigData={searchResults}
+      />
     </View>
   );
 };
