@@ -1,48 +1,39 @@
-import { movies } from "./api";
+import axios from "axios";
+import { movies, showsName } from "./api";
 import { store } from "./redux/store";
 import { addLikedMovies } from "./redux/actions";
 
 export const errorArray = [];
 
 export const fData = async () => {
-  console.log("Entering fData");
   const movieLength = movies.length;
-  console.log("Movies length: ", movieLength);
-  const batchSize = 100; // Number of movies to fetch in each batch
+  const batchSize = 100;
   const batches = Math.ceil(movieLength / batchSize);
   let breakLoop = false;
 
   for (let batchIndex = 0; batchIndex < batches; batchIndex++) {
-    console.log("Batch Index:", batchIndex); // Logging batch index
     const batchStart = batchIndex * batchSize;
     const batchEnd = Math.min((batchIndex + 1) * batchSize, movieLength);
-
-    console.log("Batch Start:", batchStart); // Logging batch start index
-    console.log("length 2: ", movieLength);
-    console.log("Batch End:", batchEnd); // Logging batch end index
 
     const fetchPromises = [];
 
     for (let i = batchStart; i < batchEnd; i++) {
       if (i < movieLength) {
-        console.log("Fetching data for movie:", i); // Logging the movie index being fetched
         fetchPromises.push(fetchMovieData(movies[i]));
-        console.log("Fetched data for movie:", i); // Logging when data is fetched for the movie
       } else {
-        console.log("end");
         breakLoop = true;
         break;
       }
     }
 
     if (breakLoop) {
-      console.log("end 2");
       break;
     }
 
-    await Promise.all(fetchPromises);
+    await Promise.all(fetchPromises.map((promise) => promise.catch((e) => e)));
   }
 };
+
 const fetchMovieData = async (item) => {
   let fullTitle;
   let nam = null;
@@ -51,7 +42,6 @@ const fetchMovieData = async (item) => {
 
   if (item) {
     fullTitle = item.title;
-
     index = fullTitle.indexOf(" - ");
 
     if (index == -1) {
@@ -66,11 +56,11 @@ const fetchMovieData = async (item) => {
 
   if (nam != null) {
     const modifiedName = nam.replace(/ /g, "%20");
-
     const API_ENDPOINT = `https://api.themoviedb.org/3/search/movie?query=${modifiedName}&%20US&primary_release_year=${year}&page=1&api_key=d159eaf1a8e9ef27976592ad48ed5a2a`;
+
     try {
-      const response = await fetch(API_ENDPOINT);
-      const data = await response.json();
+      const response = await axios.get(API_ENDPOINT);
+      const data = response.data;
       const movieData = data.results[0];
       const movieId = movieData.id || null;
 
@@ -89,8 +79,8 @@ const fetchMovieDetails = async (item, movieID) => {
   const API_ENDPOINT = `https://api.themoviedb.org/3/movie/${movieID}?&api_key=d159eaf1a8e9ef27976592ad48ed5a2a`;
 
   try {
-    const response = await fetch(API_ENDPOINT);
-    const data = await response.json();
+    const response = await axios.get(API_ENDPOINT);
+    const data = response.data;
     item.backdrop_path = data.backdrop_path;
     item.genreNames = data.genres.map((genre) => genre.name);
     item.overview = data.overview;
@@ -104,11 +94,57 @@ const fetchMovieDetails = async (item, movieID) => {
 
 export const getLikedData = async (likedList, dispatch) => {
   const likedItems = store.getState().likedItems;
-  console.log("User's liked list in movie details:", likedList);
-  console.log("Initial redux in movie details:", likedItems);
-
-  console.log("dispatch from movies: ", dispatch);
   const likedMovies = movies.filter((movie) => likedList.includes(movie.id));
-  console.log("Liked movies:", likedMovies[likedMovies.length - 1]);
   dispatch(addLikedMovies(likedMovies));
+};
+
+export const fData2 = async () => {
+  const showsLength = showsName.length;
+  const batchSize = 100;
+  const batches = Math.ceil(showsLength / batchSize);
+  let breakLoop = false;
+
+  for (let batchIndex = 0; batchIndex < batches; batchIndex++) {
+    const batchStart = batchIndex * batchSize;
+    const batchEnd = Math.min((batchIndex + 1) * batchSize, showsLength);
+
+    const fetchPromises = [];
+
+    for (let i = batchStart; i < batchEnd; i++) {
+      if (i < showsLength) {
+        fetchPromises.push(fetchShowsDetails(showsName[i]));
+      } else {
+        breakLoop = true;
+        break;
+      }
+    }
+
+    if (breakLoop) {
+      break;
+    }
+
+    await Promise.all(fetchPromises.map((promise) => promise.catch((e) => e)));
+  }
+};
+
+const fetchShowsDetails = async (item) => {
+  const title = item.title;
+  const modifiedName = title.replace(/ /g, "%20");
+  const API_ENDPOINT = `https://api.themoviedb.org/3/search/tv?query=${modifiedName}&page=1&api_key=d159eaf1a8e9ef27976592ad48ed5a2a`;
+
+  try {
+    const response = await axios.get(API_ENDPOINT);
+    const data = response.data;
+    const result = data.results[0];
+    item.id = result.id;
+    item.title = result.name;
+    item.backdrop_path = result.backdrop_path;
+    item.genreNames = result.genre_ids.map((genre) => genre.name);
+    item.overview = result.overview;
+    item.poster_path = result.poster_path;
+    item.release_date = result.first_air_date;
+    item.runtime = result.runtime;
+  } catch (error) {
+    errorArray.push(item);
+  }
 };

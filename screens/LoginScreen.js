@@ -98,7 +98,7 @@ const LoginScreen = ({ navigation }) => {
         }
         console.log("User's liked list from login:", likedList);
         console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
-        setloadingAnimation(false);
+        // setloadingAnimation(false);
       } else {
         console.log("User document not found:", userId);
       }
@@ -186,6 +186,7 @@ const LoginScreen = ({ navigation }) => {
           setText("API not working");
         }
       }
+      setloadingAnimation(false);
     } catch (error) {
       console.error("Error fetching or processing data:", error);
     }
