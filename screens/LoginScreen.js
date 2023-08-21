@@ -18,7 +18,7 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { fetchData, movies, showsName } from "../api";
-import { fData, getLikedData } from "../MovieDetailsRequest";
+import { fData, getLikedData, fData2 } from "../MovieDetailsRequest";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   createUserWithEmailAndPassword,
@@ -50,7 +50,7 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     console.log("Liked array getting updated");
     setRefresh(true);
-  }, [likedItems]);
+  }, [refresh]);
 
   const handleLogin = async () => {
     const usernameIndex = textInputValue.indexOf("username=") + 9;
@@ -91,14 +91,13 @@ const LoginScreen = ({ navigation }) => {
 
       if (userDocSnapshot.exists()) {
         const userData = userDocSnapshot.data();
-        const likedList = userData.liked || [];
+        const likedList = userData.liked || []; // getting liked list from firebase
 
-        if (userId) {
-          await getLikedData(likedList, dispatch); // Pass the userId
-        }
-        console.log("User's liked list from login:", likedList);
-        console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
-        // setloadingAnimation(false);
+        // if (userId) {
+        //   await getLikedData(likedList, dispatch, setRefresh);
+        // }
+        // console.log("User's liked list from sign in:", likedList);
+        // console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
       } else {
         console.log("User document not found:", userId);
       }
@@ -154,7 +153,7 @@ const LoginScreen = ({ navigation }) => {
       const storedData = await AsyncStorage.getItem("movies");
 
       if (storedData) {
-        console.log("Fetching data from local storage 2");
+        console.log("Fetching data from local storage movies array");
         console.log("Movies length before:  ", movies.length);
         console.log("movies stored data: ", movies[100]);
         console.log("Show name stored data: ", showsName[100]);
@@ -186,6 +185,69 @@ const LoginScreen = ({ navigation }) => {
           setText("API not working");
         }
       }
+
+      const storedData2 = await AsyncStorage.getItem("showsName");
+
+      if (storedData2) {
+        console.log("Fetching data from local storage local shownName array");
+        console.log("showsName length before:  ", showsName.length);
+        console.log("showsName stored data: ", showsName[100]);
+        console.log("Show name stored data: ", showsName[100]);
+        const parsedStoredData = JSON.parse(storedData);
+
+        parsedStoredData.forEach((storedItem, index) => {
+          showsName[index] = storedItem;
+        });
+
+        console.log("demo stored data: ", parsedStoredData[2131]);
+        console.log("showsName chached stored data: ", showsName[2131]);
+        console.log("showsName length after:  ", showsName.length);
+      } else {
+        if (showsName[0] != null) {
+          console.log("Logging showsName 0 from login screen: ", showsName[0]);
+          await fData2();
+          console.log("showsName 1: ", showsName[showsName.length]);
+          console.log("showsName 2: ", showsName[showsName.length - 1]);
+          console.log("showsName 3: ", showsName[showsName.length - 50]);
+
+          try {
+            await AsyncStorage.setItem("showsName", JSON.stringify(showsName));
+            console.log("showsName array stored in AsyncStorage");
+          } catch (error) {
+            console.error("Error storing showsName array:", error);
+          }
+        } else {
+          console.log("API not working");
+          setText("API not working");
+        }
+      }
+
+      const userId = auth.currentUser.uid;
+      console.log("Logggin from login screen the userid: ", userId);
+
+      if (userId) {
+        // Reference to the user's document
+        const userDocRef = doc(db, "users", userId);
+
+        // Get the user's document data
+        const userDocSnapshot = await getDoc(userDocRef);
+
+        if (userDocSnapshot.exists()) {
+          const userData = userDocSnapshot.data();
+          const likedList = userData.liked || []; // getting liked list from firebase
+
+          if (userId) {
+            await getLikedData(likedList, dispatch, setRefresh);
+          }
+          console.log("User's liked list from sign in:", likedList);
+          console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
+        } else {
+          console.log("User document not found:", userId);
+        }
+      } else {
+        console.log("The user doesnt exist");
+      }
+
       setloadingAnimation(false);
     } catch (error) {
       console.error("Error fetching or processing data:", error);

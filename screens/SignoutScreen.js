@@ -21,6 +21,7 @@ const SignOutScreen = ({ navigation }) => {
   useEffect(() => {
     deleteMovies("cachedData");
     deleteMovies("movies");
+    deleteMovies("showsName");
     console.log("deleted aysnc");
 
     Alert.alert("Signing Out", "Are you sure you want to sign out?", [

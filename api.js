@@ -14,11 +14,11 @@ export const fetchData = async (link) => {
     let channelData = [];
 
     if (storedData) {
-      console.log("Fetcing data from local storage 1");
+      console.log("Fetcing data from local storage of iptv");
       channelData = JSON.parse(storedData);
     } else {
       try {
-        console.log("Fetching data from api");
+        console.log("Fetching data from iptv api");
         const response = await axios.get(link);
 
         const data = response.data;
@@ -109,7 +109,6 @@ export const fetchData = async (link) => {
         addedTitles.add(titleWithoutSeason);
         showsName.push({
           title: titleWithoutSeason,
-          background: null,
         });
       }
     }
