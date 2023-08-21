@@ -7,7 +7,7 @@ import {
   arrayRemove,
 } from "firebase/firestore"; // Import Firestore functions
 
-export const updateUserLikedArray = async (itemID, action) => {
+export const updateUserLikedArray = async (itemTitle, action) => {
   const userID = auth.currentUser.uid.toString();
 
   try {
@@ -20,10 +20,12 @@ export const updateUserLikedArray = async (itemID, action) => {
 
       if (action === "add") {
         // Update the 'liked' array with the new value
-        const newLikedArray = [...userData.liked, itemID];
+        const newLikedArray = [...userData.liked, itemTitle];
         await updateDoc(userDocRef, { liked: newLikedArray });
       } else if (action === "remove") {
-        const newLikedArray = userData.liked.filter((item) => item !== itemID);
+        const newLikedArray = userData.liked.filter(
+          (item) => item !== itemTitle
+        );
         await updateDoc(userDocRef, { liked: newLikedArray });
       }
 

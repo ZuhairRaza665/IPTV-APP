@@ -23,7 +23,7 @@ const MovieCard = ({
 }) => {
   const handleLongPress = (item) => {
     const isItemLiked = likedItems.some(
-      (likedItem) => likedItem?.id === item?.id
+      (likedItem) => likedItem?.title === item?.title
     );
 
     if (isItemLiked) {
@@ -34,12 +34,12 @@ const MovieCard = ({
   };
 
   const handleOnPress = () => {
-    navigation.navigate("VideoScreen");
+    navigation.navigate("MovieScreen");
   };
 
   const renderItem = ({ item }) => {
     const isItemLiked = likedItems.some(
-      (likedItem) => likedItem?.id === item?.id
+      (likedItem) => likedItem?.title === item?.title
     );
 
     return (

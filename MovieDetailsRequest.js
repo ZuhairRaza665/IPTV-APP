@@ -104,14 +104,14 @@ const fetchMovieDetails = async (item, movieID) => {
 
 export const getLikedData = async (likedList, dispatch, setRefresh) => {
   console.log("Liked List from getLikedData: ", likedList);
-  console.log("movie 100  from getLikedData: ", movies[100].id);
-  console.log("movie 200  from getLikedData: ", movies[200].id);
-  console.log("movie 200  from getLikedData: ", movies[movies.length - 50].id);
+  console.log("movie 100  from getLikedData: ", movies[100]);
+  console.log("movie 200  from getLikedData: ", movies[200]);
+  console.log("movie 200  from getLikedData: ", movies[movies.length - 50]);
   console.log(
     "does like list items included in movie: ",
-    movies.filter((movie) => likedList.includes(movie.id))
+    movies.filter((movie) => likedList.includes(movie.title))
   );
-  const likedMovies = movies.filter((movie) => likedList.includes(movie.id));
+  const likedMovies = movies.filter((movie) => likedList.includes(movie.title));
   console.log("Liked Movies from getLikedData: ", likedMovies);
   dispatch(addLikedMovies(likedMovies));
   setRefresh(true);
