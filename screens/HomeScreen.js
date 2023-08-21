@@ -8,7 +8,7 @@ import { store } from "../redux/store";
 const HomeScreen = ({ navigation }) => {
   const [random, setRandomMovie] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
-  const [continueWatching, setContinueWatching] = useState([]);
+  const [continueWatching, setContinueWatching] = useState([1, 2, 3]);
 
   useEffect(() => {
     const getRandomIndexes = (length, count) => {
@@ -31,33 +31,47 @@ const HomeScreen = ({ navigation }) => {
     setLikedItems(store.getState().likedItems);
   }, []);
 
-  return (
+  return continueWatching.length > 0 ? (
     <ScrollView style={styles.container}>
       <View>
         <MovieSlider moviesData={random} />
       </View>
-      {continueWatching.length > 0 && (
-        <View>
-          <Text style={styles.text}>Continue Watching</Text>
-          <View style={{ top: "13%" }}>
-            <MovieCard
-              navigation={navigation}
-              direction={null}
-              bigData={null}
-            />
-          </View>
-        </View>
-      )}
-      <View style={{ top: "7%" }}>
-        <Text style={styles.text}>Explore</Text>
-      </View>
-      <View style={{ marginTop: "18%" }}>
+
+      <Text
+        style={{ color: "white", fontSize: 30, fontWeight: "bold", top: 55 }}
+      >
+        Continue Watching
+      </Text>
+      <View style={{ marginTop: 45, paddingLeft: 10 }}>
         <MovieCard navigation={navigation} direction={null} bigData={random} />
       </View>
-      <Text> </Text>
-      <Text> </Text>
-      <Text> </Text>
+      <View style={{ top: 7 }}>
+        <Text
+          style={{ color: "white", fontSize: 30, fontWeight: "bold", top: 40 }}
+        >
+          Explore
+        </Text>
+      </View>
+      <View style={{ marginTop: 35, paddingLeft: 10 }}>
+        <MovieCard navigation={navigation} direction={null} bigData={random} />
+      </View>
+      <View style={{ marginTop: 80 }}></View>
     </ScrollView>
+  ) : (
+    <View style={styles.container}>
+      <View>
+        <MovieSlider moviesData={random} />
+      </View>
+      <Text
+        style={{ color: "white", fontSize: 30, fontWeight: "bold", top: 60 }}
+      >
+        Explore
+      </Text>
+      <View style={{ top: 50 }}>
+        <MovieCard navigation={navigation} direction={null} bigData={random} />
+      </View>
+      <View style={{ marginTop: 80 }}></View>
+    </View>
   );
 };
 
@@ -71,7 +85,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 30,
     fontWeight: "bold",
-    top: "17%",
   },
 });
 

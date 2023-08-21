@@ -93,11 +93,11 @@ const LoginScreen = ({ navigation }) => {
         const userData = userDocSnapshot.data();
         const likedList = userData.liked || []; // getting liked list from firebase
 
-        // if (userId) {
-        //   await getLikedData(likedList, dispatch, setRefresh);
-        // }
-        // console.log("User's liked list from sign in:", likedList);
-        // console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
+        if (userId) {
+          await getLikedData(likedList, dispatch, setRefresh);
+        }
+        console.log("User's liked list from sign in:", likedList);
+        console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
       } else {
         console.log("User document not found:", userId);
       }
@@ -193,7 +193,7 @@ const LoginScreen = ({ navigation }) => {
         console.log("showsName length before:  ", showsName.length);
         console.log("showsName stored data: ", showsName[100]);
         console.log("Show name stored data: ", showsName[100]);
-        const parsedStoredData = JSON.parse(storedData);
+        const parsedStoredData = JSON.parse(storedData2);
 
         parsedStoredData.forEach((storedItem, index) => {
           showsName[index] = storedItem;
@@ -222,32 +222,34 @@ const LoginScreen = ({ navigation }) => {
         }
       }
 
-      const userId = auth.currentUser.uid;
-      console.log("Logggin from login screen the userid: ", userId);
+      if (auth.currentUser) {
+        console.log("Entering uid ");
+        const userId = auth.currentUser.uid;
+        console.log("Logggin from login screen the userid: ", userId);
 
-      if (userId) {
-        // Reference to the user's document
-        const userDocRef = doc(db, "users", userId);
+        if (userId) {
+          // Reference to the user's document
+          const userDocRef = doc(db, "users", userId);
 
-        // Get the user's document data
-        const userDocSnapshot = await getDoc(userDocRef);
+          // Get the user's document data
+          const userDocSnapshot = await getDoc(userDocRef);
 
-        if (userDocSnapshot.exists()) {
-          const userData = userDocSnapshot.data();
-          const likedList = userData.liked || []; // getting liked list from firebase
+          if (userDocSnapshot.exists()) {
+            const userData = userDocSnapshot.data();
+            const likedList = userData.liked || []; // getting liked list from firebase
 
-          if (userId) {
-            await getLikedData(likedList, dispatch, setRefresh);
+            if (userId) {
+              await getLikedData(likedList, dispatch, setRefresh);
+            }
+            console.log("User's liked list from sign in:", likedList);
+            console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
+          } else {
+            console.log("User document not found:", userId);
           }
-          console.log("User's liked list from sign in:", likedList);
-          console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
         } else {
-          console.log("User document not found:", userId);
+          console.log("The user doesnt exist");
         }
-      } else {
-        console.log("The user doesnt exist");
       }
-
       setloadingAnimation(false);
     } catch (error) {
       console.error("Error fetching or processing data:", error);

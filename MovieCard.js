@@ -94,7 +94,7 @@ const MovieCard = ({
 
 const styles = StyleSheet.create({
   container: {
-    height: 265,
+    height: 350,
     width: 165,
     backgroundColor: "#212020",
     margin: 15,
@@ -108,9 +108,8 @@ const styles = StyleSheet.create({
   titleSty: {
     fontSize: 15,
     color: "white",
-    textAlign: "center",
-    top: 10,
     fontWeight: "900",
+    textAlign: "center",
   },
   heartIconContainer: {
     position: "absolute",

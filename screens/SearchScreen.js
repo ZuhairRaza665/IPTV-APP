@@ -96,13 +96,17 @@ const SearchScreen = ({ navigation }) => {
         onChangeText={(text) => setSearchText(text)}
         style={styles.text}
       />
+
       <SwitchButton setSelectedIndex={setSelectedIndex} />
-      <MovieCard
-        navigation={navigation}
-        direction="vertical"
-        numOfColmb={2}
-        bigData={searchResults}
-      />
+
+      <View style={{ marginTop: 20 }}>
+        <MovieCard
+          navigation={navigation}
+          direction="vertical"
+          numOfColmb={2}
+          bigData={searchResults}
+        />
+      </View>
     </View>
   );
 };
