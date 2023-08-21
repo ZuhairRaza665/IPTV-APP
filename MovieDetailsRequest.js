@@ -13,14 +13,21 @@ export const fData = async () => {
   let breakLoop = false;
 
   for (let batchIndex = 0; batchIndex < batches; batchIndex++) {
+    console.log("Batch Index:", batchIndex); // Logging batch index
     const batchStart = batchIndex * batchSize;
     const batchEnd = Math.min((batchIndex + 1) * batchSize, movieLength);
+
+    console.log("Batch Start:", batchStart); // Logging batch start index
+    console.log("length 2: ", movieLength);
+    console.log("Batch End:", batchEnd); // Logging batch end index
 
     const fetchPromises = [];
 
     for (let i = batchStart; i < batchEnd; i++) {
       if (i < movieLength) {
+        console.log("Fetching data for movie:", i); // Logging the movie index being fetched
         fetchPromises.push(fetchMovieData(movies[i]));
+        console.log("Fetching data for movie:", i); // Logging the movie index being fetched
       } else {
         console.log("end movie");
         breakLoop = true;
@@ -126,7 +133,9 @@ export const fData2 = async () => {
 
     for (let i = batchStart; i < batchEnd; i++) {
       if (i < showsLength) {
+        console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
         fetchPromises.push(fetchShowsDetails(showsName[i]));
+        console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
       } else {
         console.log("end shows");
         breakLoop = true;
