@@ -31,6 +31,7 @@ import { addLikedItem } from "../redux/actions";
 import { auth, db } from "../firebase"; // Import the Firebase initialization
 import { collection, doc, getDocs, getDoc, setDoc } from "firebase/firestore"; // Import Firestore functions
 import { store } from "../redux/store";
+import { errorArray } from "../MovieDetailsRequest";
 
 const LoginScreen = ({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -250,6 +251,7 @@ const LoginScreen = ({ navigation }) => {
           console.log("The user doesnt exist");
         }
       }
+      console.log("errorArray: ", errorArray.length);
       setloadingAnimation(false);
     } catch (error) {
       console.error("Error fetching or processing data:", error);

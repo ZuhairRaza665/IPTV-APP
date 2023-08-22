@@ -5,7 +5,7 @@ import MovieCard from "../MovieCard";
 import { movies } from "../api";
 import { store } from "../redux/store";
 
-const FavoriteScreen = () => {
+const FavoriteScreen = ({ navigation }) => {
   const [likedItems, setLikedItems] = useState([]);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ const FavoriteScreen = () => {
     <View style={styles.container}>
       <Text style={styles.text}>Favorites</Text>
       <MovieCard
-        navigation={null} // Pass your navigation here if needed
+        navigation={navigation} // Pass your navigation here if needed
         direction="vertical"
         numOfColmb={2} // Corrected prop name
         bigData={likedItems}

@@ -106,7 +106,9 @@ const MainScreen = () => {
       <Tab.Screen name="home">
         {(props) => <HomeScreen {...props} />}
       </Tab.Screen>
-      <Tab.Screen name="Heart" component={FavoriteScreen} />
+      <Tab.Screen name="Heart">
+        {(props) => <FavoriteScreen {...props} />}
+      </Tab.Screen>
       <Tab.Screen name="TV" component={TVScreen} />
       <Tab.Screen name="Search" component={SearchScreen} />
     </Tab.Navigator>

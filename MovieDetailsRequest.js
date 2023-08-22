@@ -3,7 +3,7 @@ import { movies, showsName } from "./api";
 import { store } from "./redux/store";
 import { addLikedMovies } from "./redux/actions";
 
-export const errorArray = [];
+export let errorArray = [];
 
 export const fData = async () => {
   console.log("starting movie");

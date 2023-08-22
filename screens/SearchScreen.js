@@ -3,6 +3,7 @@ import { View, TextInput, StyleSheet, Switch, Text } from "react-native";
 import MovieCard from "../MovieCard";
 import { movies, showsName } from "../api";
 import SwitchButton from "../SwitchButton";
+import { errorArray } from "../MovieDetailsRequest";
 
 const generateRandomIndexes = (maxIndex, count) => {
   const indexes = [];
@@ -23,6 +24,8 @@ const SearchScreen = ({ navigation }) => {
   const [showsDataCompleted, setShowsDataCompleted] = useState(false);
   const [randomMoviesResults, setRandomMoviesResults] = useState([]);
   const [randomShowsResults, setRandomShowsResults] = useState([]);
+
+  console.log("errorArray: ", errorArray);
 
   useEffect(() => {
     console.log("Selected Index:", selectedIndex);
