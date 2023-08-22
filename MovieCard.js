@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { addLikedItem, removeLikedItem } from "./redux/actions";
+import { showsName } from "./api";
 
 const MovieCard = ({
   navigation,
@@ -33,8 +34,16 @@ const MovieCard = ({
     }
   };
 
-  const handleOnPress = () => {
-    navigation.navigate("MovieScreen");
+  const handleOnPress = (item) => {
+    const matchingShow = showsName.find((show) => show.id === item.id);
+
+    if (matchingShow) {
+      console.log("entering showsnam: ");
+      navigation.navigate("ShowsScreen", { item });
+    } else {
+      console.log("entering movies: ");
+      navigation.navigate("MovieScreen", { item });
+    }
   };
 
   const renderItem = ({ item }) => {
@@ -45,7 +54,7 @@ const MovieCard = ({
     return (
       <TouchableWithoutFeedback
         onLongPress={() => handleLongPress(item)}
-        onPress={handleOnPress}
+        onPress={() => handleOnPress(item)}
       >
         <View style={styles.container}>
           <Image

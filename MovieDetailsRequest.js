@@ -97,6 +97,8 @@ const fetchMovieDetails = async (item, movieID) => {
     item.poster_path = data.poster_path;
     item.release_date = data.release_date;
     item.runtime = data.runtime;
+    item.vote_average = data.vote_average;
+    item.vote_count = data.vote_count;
   } catch (error) {
     errorArray.push(item);
   }
@@ -104,15 +106,22 @@ const fetchMovieDetails = async (item, movieID) => {
 
 export const getLikedData = async (likedList, dispatch, setRefresh) => {
   console.log("Liked List from getLikedData: ", likedList);
-  console.log("movie 100  from getLikedData: ", movies[100]);
-  console.log("movie 200  from getLikedData: ", movies[200]);
-  console.log("movie 200  from getLikedData: ", movies[movies.length - 50]);
-  console.log(
-    "does like list items included in movie: ",
-    movies.filter((movie) => likedList.includes(movie.title))
-  );
-  const likedMovies = movies.filter((movie) => likedList.includes(movie.title));
+  console.log("movie 100 from getLikedData: ", movies[100]);
+  console.log("movie 200 from getLikedData: ", movies[200]);
+  console.log("movie -50 from getLikedData: ", movies[movies.length - 50]);
+
+  const likedMovies = likedList.map((likedTitle) => {
+    const foundMovie = movies.find((movie) => movie.title === likedTitle);
+    if (foundMovie) {
+      return foundMovie;
+    } else {
+      const foundTv = showsName.find((show) => show.title === likedTitle);
+      return foundTv;
+    }
+  });
+
   console.log("Liked Movies from getLikedData: ", likedMovies);
+
   dispatch(addLikedMovies(likedMovies));
   setRefresh(true);
 };
@@ -167,6 +176,8 @@ const fetchShowsDetails = async (item) => {
     item.overview = result.overview;
     item.poster_path = result.poster_path;
     item.release_date = result.first_air_date;
+    item.vote_average = result.vote_average;
+    item.vote_count = result.vote_count;
   } catch (error) {
     errorArray.push(item);
   }

@@ -4,7 +4,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 
 export let optionSelected = 1;
 
-const CustomDropdown = ({ options }) => {
+const CustomDropdown = ({ options, onOptionSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0]);
 
@@ -13,9 +13,8 @@ const CustomDropdown = ({ options }) => {
   };
 
   const handleOptionSelect = (option) => {
-    console.log("selected option: ", option.value);
     setSelectedOption(option);
-    optionSelected = option.value;
+    onOptionSelect(option.value); // Call the callback with the selected option value
     setIsOpen(false);
   };
 
