@@ -102,7 +102,7 @@ const SearchScreen = ({ navigation }) => {
 
       <SwitchButton setSelectedIndex={setSelectedIndex} />
 
-      <View style={{ marginTop: 20 }}>
+      <View style={{ top: 20 }}>
         <MovieCard
           navigation={navigation}
           direction="vertical"
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: "20%",
+    paddingBottom: "22%",
     backgroundColor: "#0B0B0B",
   },
   text: {
