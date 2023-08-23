@@ -13,6 +13,7 @@ import ShowsScreen from "./screens/ShowsScreen";
 import { currentUserID } from "./screens/LoginScreen";
 import MovieCard from "./MovieCard";
 // import { fetchMovies, fetchTV } from "./MovieDB";
+import ShowMoreScreen from "./screens/ShowMoreScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage from the correct package
 
 const Stack = createNativeStackNavigator();
@@ -69,6 +70,11 @@ function App() {
             options={{ headerShown: false }}
             name="ShowsScreen"
             component={ShowsScreen}
+          />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="ShowMore"
+            component={ShowMoreScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>

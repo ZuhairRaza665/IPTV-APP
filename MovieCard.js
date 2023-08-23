@@ -85,7 +85,7 @@ const MovieCard = ({
   const renderSeeMoreButton = () => {
     return (
       <TouchableOpacity
-        // onPress={() => navigation.navigate("ShowMore")}
+        onPress={() => navigation.navigate("ShowMore", { bigData, navigation })}
         style={styles.seeMoreButton}
       >
         <View style={[styles.logoContainer, { backgroundColor: "black" }]}>
