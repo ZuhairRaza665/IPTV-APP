@@ -114,7 +114,7 @@ const MovieCard = ({
 
   return (
     <FlatList
-      data={bigData}
+      data={bigData.slice(0, 10)}
       renderItem={renderItem}
       keyExtractor={(item) => item?.title}
       horizontal={true}

@@ -178,6 +178,7 @@ const fetchShowsDetails = async (item) => {
     item.release_date = result.first_air_date;
     item.vote_average = result.vote_average;
     item.vote_count = result.vote_count;
+    item.number_of_seasons = result.number_of_seasons;
   } catch (error) {
     errorArray.push(item);
   }
