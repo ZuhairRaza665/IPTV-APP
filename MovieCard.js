@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     height: 350,
     width: 165,
     backgroundColor: "#212020",
-    margin: 15,
+    margin: 11,
     borderRadius: 15,
     top: 10,
   },
