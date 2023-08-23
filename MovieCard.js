@@ -7,10 +7,12 @@ import {
   StyleSheet,
   Image,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { addLikedItem, removeLikedItem } from "./redux/actions";
 import { showsName } from "./api";
+import LottieView from "lottie-react-native"; // Import LottieView
 
 const MovieCard = ({
   navigation,
@@ -80,6 +82,25 @@ const MovieCard = ({
     );
   };
 
+  const renderSeeMoreButton = () => {
+    return (
+      <TouchableOpacity
+        // onPress={() => navigation.navigate("ShowMore")}
+        style={styles.seeMoreButton}
+      >
+        <View style={[styles.logoContainer, { backgroundColor: "black" }]}>
+          <View style={styles.lottieContainer}>
+            <LottieView
+              source={require("./assets/odJn8M18m0 (3).json")} // Replace with the correct path
+              autoPlay
+              loop
+              style={styles.lottieAnimation} // Apply other Lottie animation styles if needed
+            />
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
   if (direction === "vertical") {
     return (
       <FlatList
@@ -97,6 +118,7 @@ const MovieCard = ({
       renderItem={renderItem}
       keyExtractor={(item) => item?.title}
       horizontal={true}
+      ListFooterComponent={renderSeeMoreButton}
     />
   );
 };
@@ -124,6 +146,27 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: "10%",
+  },
+  lottieContainer: {
+    top: 150,
+    right: 15,
+    width: 100,
+    height: 100,
+    backgroundColor: "black", // Apply black background color to the container
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  lottieAnimation: {
+    width: 80,
+    height: 80,
+  },
+  seeMoreButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 100,
+    height: 40,
+    alignSelf: "center",
+    marginTop: 10,
   },
 });
 
