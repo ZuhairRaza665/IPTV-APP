@@ -48,10 +48,6 @@ function ShowsScreen({ route }) {
               <Text style={styles.text2}>{item?.release_date}</Text>
             </View>
             <View style={styles.inlineContainer}>
-              <Text style={styles.text}>Runtime: </Text>
-              <Text style={styles.text2}>{item?.runtime} mins</Text>
-            </View>
-            <View style={styles.inlineContainer}>
               <Text style={styles.text}>Genre: </Text>
               <Text style={styles.text2}>
                 {item?.genreNames.slice(0, 2).join(", ")}

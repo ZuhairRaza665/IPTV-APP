@@ -4,6 +4,7 @@ import { store } from "./redux/store";
 import { addLikedMovies } from "./redux/actions";
 
 export let errorArray = [];
+export let uniqueErrorArray = [];
 
 export const fData = async () => {
   console.log("starting movie");
@@ -159,6 +160,17 @@ export const fData2 = async () => {
 
     await Promise.all(fetchPromises);
   }
+
+  const uniqueTitlesMap = new Map();
+
+  // Filter out duplicates based on the title attribute
+  errorArray.forEach((item) => {
+    const title = item.title;
+    if (!uniqueTitlesMap.has(title)) {
+      uniqueTitlesMap.set(title, true);
+      uniqueErrorArray.push(item);
+    }
+  });
 };
 const fetchShowsDetails = async (item) => {
   const title = item.title;

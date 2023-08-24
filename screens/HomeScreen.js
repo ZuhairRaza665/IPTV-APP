@@ -2,13 +2,21 @@ import MovieSlider from "../MovieSlider";
 import MovieCard from "../MovieCard";
 import { View, StyleSheet, Text, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
-import { movies } from "../api";
+import { movies, showsName } from "../api";
 import { store } from "../redux/store";
 
 const HomeScreen = ({ navigation }) => {
   const [random, setRandomMovie] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
   const [continueWatching, setContinueWatching] = useState([1, 2, 3]);
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
 
   useEffect(() => {
     const getRandomIndexes = (length, count) => {
@@ -25,9 +33,13 @@ const HomeScreen = ({ navigation }) => {
       return indexes;
     };
 
-    const randomIndexes = getRandomIndexes(movies.length, 30);
-    const randomMovies = randomIndexes.map((index) => movies[index]);
-    setRandomMovie(randomMovies.slice(0, 30));
+    const randomIndexesForMovies = getRandomIndexes(movies.length, 15);
+    const randomIndexesForShows = getRandomIndexes(showsName.length, 15);
+    const randomMovies = randomIndexesForMovies.map((index) => movies[index]);
+    const randomShows = randomIndexesForShows.map((index) => showsName[index]);
+    const mergedArray = shuffleArray(randomMovies.concat(randomShows));
+
+    setRandomMovie(mergedArray);
     setLikedItems(store.getState().likedItems);
   }, []);
 
