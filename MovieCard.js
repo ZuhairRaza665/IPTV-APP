@@ -106,7 +106,7 @@ const MovieCard = ({
       <FlatList
         data={bigData}
         renderItem={renderItem}
-        keyExtractor={(item) => item?.title}
+        keyExtractor={(item) => item.title}
         numColumns={numOfColmb}
       />
     );
@@ -114,9 +114,9 @@ const MovieCard = ({
 
   return (
     <FlatList
-      data={bigData.slice(0, 10)}
+      data={bigData.length > 10 ? bigData.slice(0, 10) : bigData}
       renderItem={renderItem}
-      keyExtractor={(item) => item?.title}
+      keyExtractor={(item) => item.title}
       horizontal={true}
       ListFooterComponent={renderSeeMoreButton}
     />
