@@ -8,7 +8,7 @@ export const ADD_LIKED_MOVIES = "ADD_LIKED_MOVIES";
 
 export const addLikedItem = (item) => {
   if (item.title != null) {
-    console.log("item being liked: ", item.title);
+    // console.log("item being liked: ", item.title);
     updateUserLikedArray(item.title, "add");
   }
   return {
@@ -19,7 +19,7 @@ export const addLikedItem = (item) => {
 
 export const removeLikedItem = (item) => {
   if (item.id != null) {
-    console.log("item being liked: ", item.title);
+    // console.log("item being liked: ", item.title);
     updateUserLikedArray(item.title, "remove");
   }
   return {

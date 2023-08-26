@@ -4,8 +4,8 @@ import { Video } from "expo-av";
 import * as ScreenOrientation from "expo-screen-orientation";
 
 const VideoScreen = ({ route }) => {
-  const videoUrl =
-    "http://b1g.ooo:80/series/entireservices/entireservices/281260.mp4";
+  const { item } = route.params;
+  const videoUrl = item.link;
   const [isLoading, setIsLoading] = useState(true);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [isVideoStuck, setIsVideoStuck] = useState(false);
@@ -48,22 +48,23 @@ const VideoScreen = ({ route }) => {
           style={[styles.video]}
           shouldPlay
           useNativeControls
+          // positionMillis={3600 * 1000} // time to forward
           onLoad={handleVideoLoad}
           onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
           resizeMode="contain"
         />
-        {isLoading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="blue" />
-          </View>
-        )}
-        {isVideoStuck && (
+        {/* {isLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
+        )} */}
+        {/* {isVideoStuck && (
           <View style={styles.stuckContainer}>
             <Text style={styles.stuckText}>
               Video is stuck. Please try again.
             </Text>
           </View>
-        )}
+        )} */}
       </View>
     </View>
   );

@@ -14,11 +14,11 @@ export const fetchData = async (link) => {
     let channelData = [];
 
     if (storedData) {
-      console.log("Fetcing data from local storage of iptv");
+      // console.log("Fetcing data from local storage of iptv");
       channelData = JSON.parse(storedData);
     } else {
       try {
-        console.log("Fetching data from iptv api");
+        // console.log("Fetching data from iptv api");
         const response = await axios.get(link);
 
         const data = response.data;

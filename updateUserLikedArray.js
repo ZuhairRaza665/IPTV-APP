@@ -29,9 +29,9 @@ export const updateUserLikedArray = async (itemTitle, action) => {
         await updateDoc(userDocRef, { liked: newLikedArray });
       }
 
-      console.log("Liked array updated for user:", userID);
+      // console.log("Liked array updated for user:", userID);
     } else {
-      console.log("User document not found:", userID);
+      // console.log("User document not found:", userID);
     }
   } catch (error) {
     console.error("Error updating liked array:", error);

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { movies, showsName } from "./api";
+import { movies, shows, showsName } from "./api";
 import { store } from "./redux/store";
 import { addLikedMovies } from "./redux/actions";
 
@@ -7,28 +7,28 @@ export let errorArray = [];
 export let uniqueErrorArray = [];
 
 export const fData = async () => {
-  console.log("starting movie");
+  // console.log("starting movie");
   const movieLength = movies.length;
   const batchSize = 100;
   const batches = Math.ceil(movieLength / batchSize);
   let breakLoop = false;
 
   for (let batchIndex = 0; batchIndex < batches; batchIndex++) {
-    console.log("Batch Index:", batchIndex); // Logging batch index
+    // console.log("Batch Index for movies:", batchIndex); // Logging batch index
     const batchStart = batchIndex * batchSize;
     const batchEnd = Math.min((batchIndex + 1) * batchSize, movieLength);
 
-    console.log("Batch Start:", batchStart); // Logging batch start index
-    console.log("length 2: ", movieLength);
-    console.log("Batch End:", batchEnd); // Logging batch end index
+    // console.log("Batch Start for movies:", batchStart); // Logging batch start index
+    // console.log("length 2 for movies: ", movieLength);
+    // console.log("Batch End for movies:", batchEnd); // Logging batch end index
 
     const fetchPromises = [];
 
     for (let i = batchStart; i < batchEnd; i++) {
       if (i < movieLength) {
-        console.log("Fetching data for movie:", i); // Logging the movie index being fetched
+        // console.log("Fetching data for movie:", i); // Logging the movie index being fetched
         fetchPromises.push(fetchMovieData(movies[i]));
-        console.log("Fetching data for movie:", i); // Logging the movie index being fetched
+        // console.log("Fetching data for movie:", i); // Logging the movie index being fetched
       } else {
         console.log("end movie");
         breakLoop = true;
@@ -106,10 +106,10 @@ const fetchMovieDetails = async (item, movieID) => {
 };
 
 export const getLikedData = async (likedList, dispatch, setRefresh) => {
-  console.log("Liked List from getLikedData: ", likedList);
-  console.log("movie 100 from getLikedData: ", movies[100]);
-  console.log("movie 200 from getLikedData: ", movies[200]);
-  console.log("movie -50 from getLikedData: ", movies[movies.length - 50]);
+  // console.log("Liked List from getLikedData: ", likedList);
+  // console.log("movie 100 from getLikedData: ", movies[100]);
+  // console.log("movie 200 from getLikedData: ", movies[200]);
+  // console.log("movie -50 from getLikedData: ", movies[movies.length - 50]);
 
   const likedMovies = likedList.map((likedTitle) => {
     const foundMovie = movies.find((movie) => movie.title === likedTitle);
@@ -121,7 +121,7 @@ export const getLikedData = async (likedList, dispatch, setRefresh) => {
     }
   });
 
-  console.log("Liked Movies from getLikedData: ", likedMovies);
+  // console.log("Liked Movies from getLikedData: ", likedMovies);
 
   dispatch(addLikedMovies(likedMovies));
   setRefresh(true);
@@ -136,16 +136,20 @@ export const fData2 = async () => {
   let breakLoop = false;
 
   for (let batchIndex = 0; batchIndex < batches; batchIndex++) {
+    // console.log("Batch Index for tv:", batchIndex); // Logging batch index
     const batchStart = batchIndex * batchSize;
     const batchEnd = Math.min((batchIndex + 1) * batchSize, showsLength);
+
+    // console.log("Batch Start for tv:", batchStart); // Logging batch start index
+    // console.log("Batch End for tv:", batchEnd); // Logging batch end index
 
     const fetchPromises = [];
 
     for (let i = batchStart; i < batchEnd; i++) {
       if (i < showsLength) {
-        console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
+        // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
         fetchPromises.push(fetchShowsDetails(showsName[i]));
-        console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
+        // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
       } else {
         console.log("end shows");
         breakLoop = true;
@@ -194,4 +198,124 @@ const fetchShowsDetails = async (item) => {
   } catch (error) {
     errorArray.push(item);
   }
+};
+
+export const fData3 = async () => {
+  // console.log("Entering shows");
+  const showsLength = shows.length;
+  console.log("Shows length: ", showsLength);
+  const batchSize = 300; // Number of movies to fetch in each batch
+  const batches = Math.ceil(showsLength / batchSize);
+  let breakLoop = false;
+
+  for (let batchIndex = 0; batchIndex < batches; batchIndex++) {
+    console.log("Batch Index for shows:", batchIndex); // Logging batch index
+    const batchStart = batchIndex * batchSize;
+    const batchEnd = Math.min((batchIndex + 1) * batchSize, showsLength);
+
+    console.log("Batch Start for shows:", batchStart); // Logging batch start index
+    console.log("Batch End for shows:", batchEnd); // Logging batch end index
+
+    const fetchPromises = [];
+
+    for (let i = batchStart; i < batchEnd; i++) {
+      if (i < showsLength) {
+        // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
+        fetchPromises.push(fetchShowsEpisodes(shows[i]));
+        // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
+      } else {
+        console.log("end shows");
+        breakLoop = true;
+        break;
+      }
+    }
+
+    if (breakLoop) {
+      console.log("end shows");
+      break;
+    }
+
+    await Promise.all(fetchPromises);
+  }
+};
+
+const fetchShowsEpisodes = async (item) => {
+  const title = item.title;
+  const seasonIndex = title.indexOf("S");
+  const season = title.substring(seasonIndex + 1, seasonIndex + 2);
+  const episodeIndex = title.indexOf("E");
+  const episode = title.substring(episodeIndex + 1, episodeIndex + 2);
+  const API_ENDPOINT = `https://api.themoviedb.org/3/tv/${item.id}/season/${season}/${episode}/1?&api_key=d159eaf1a8e9ef27976592ad48ed5a2a`;
+
+  try {
+    const response = await fetch(API_ENDPOINT);
+    const data = await response.json();
+    item.id = data.id;
+    item.name = data.name;
+    item.still_path = data.still_path;
+    item.overview = data.overview;
+    item.air_date = data.air_date;
+    item.vote_average = data.vote_average;
+    item.vote_count = data.vote_count;
+    item.runtime = data.runtime;
+  } catch (error) {
+    errorArray.push(item);
+  }
+};
+
+export const fetchOneShowsSeason = async (item) => {
+  // console.log("Entering fetchOneShowsSeason");
+  const API_KEY = "d159eaf1a8e9ef27976592ad48ed5a2a";
+
+  const API_ENDPOINT1 = `https://api.themoviedb.org/3/tv/${item.id}?&api_key=${API_KEY}`;
+
+  let number_of_seasons = null;
+  try {
+    const response = await fetch(API_ENDPOINT1);
+    const data = await response.json();
+    number_of_seasons = data.number_of_seasons;
+  } catch (error) {
+    console.error("Error fetching show information:", error);
+    return;
+  }
+
+  console.log("total seasons: ", number_of_seasons);
+
+  let seasons = {};
+
+  for (let i = 1; i <= number_of_seasons; i++) {
+    seasons[i] = [];
+  }
+
+  console.log("seasons array: ", seasons); //season start from 1 and episode staart from 0th index [season][episode]
+
+  const size = Object.keys(seasons).length;
+  console.log("Size of seasons object:", size);
+
+  let index = shows.findIndex((show) =>
+    show.title.toLowerCase().includes(item.title.toLowerCase())
+  );
+
+  for (let a = 1; a <= number_of_seasons; a++) {
+    const API_ENDPOINT2 = `https://api.themoviedb.org/3/tv/${item.id}/season/${a}?&api_key=d159eaf1a8e9ef27976592ad48ed5a2a`;
+
+    try {
+      const response = await fetch(API_ENDPOINT2);
+      const data = await response.json();
+      const episodesArr = data.episodes;
+      seasons[a] = episodesArr; //setting the episode array to season index for example season 1 whole episodes
+
+      console.log("index : ", index);
+      for (let i = 0; i < seasons[a].length; i++) {
+        //run till season length, setting link of each episode for that whole season
+        seasons[a][i].link = shows[index].link;
+
+        index++;
+      }
+    } catch (error) {
+      console.error("Error fetching episode information:", error);
+      errorArray.push(item);
+    }
+  }
+  return seasons;
 };

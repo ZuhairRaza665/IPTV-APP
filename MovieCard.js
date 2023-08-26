@@ -40,10 +40,10 @@ const MovieCard = ({
     const matchingShow = showsName.find((show) => show.id === item.id);
 
     if (matchingShow) {
-      console.log("entering showsnam: ");
+      // console.log("entering showsnam: ");
       navigation.navigate("ShowsScreen", { item });
     } else {
-      console.log("entering movies: ");
+      // console.log("entering movies: ");
       navigation.navigate("MovieScreen", { item });
     }
   };
@@ -76,7 +76,9 @@ const MovieCard = ({
               <Icon name="heart" size={20} color="red" />
             </View>
           )}
-          <Text style={styles.titleSty}>{item?.title}</Text>
+          <View style={styles.container2}>
+            <Text style={styles.titleSty}>{item?.title}</Text>
+          </View>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -131,6 +133,10 @@ const styles = StyleSheet.create({
     margin: 11,
     borderRadius: 15,
     top: 10,
+  },
+  container2: {
+    flex: 1,
+    justifyContent: "center",
   },
   image: {
     height: "80%",

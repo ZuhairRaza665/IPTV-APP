@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Image, Dimensions } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import { movies } from "../api";
 
 const screenWidth = Dimensions.get("window").width;
 
-function MovieScreen({ route }) {
+function MovieScreen({ route, navigation }) {
   const { item } = route.params;
 
   return (
@@ -66,16 +73,23 @@ function MovieScreen({ route }) {
                 top: 60,
               }}
             >
-              {"    " + item?.overview.slice(0, screenWidth - 340)}
+              {"    " + item?.overview?.slice(0, screenWidth - 340)}
             </Text>
           </View>
           <Text style={styles.text3}>
-            {item?.overview.slice(screenWidth - 340)}
+            {item?.overview?.slice(screenWidth - 340)}
           </Text>
         </View>
       </View>
 
-      <View style={{ flex: 0.45 }}></View>
+      <View style={{ flex: 0.45 }}>
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => navigation.navigate("VideoScreen", { item })}
+        >
+          <Text style={styles.text}>Play</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -102,10 +116,22 @@ const styles = StyleSheet.create({
     color: "white",
     top: 30,
     left: 1,
+    right: 1,
+    maxWidth: screenWidth - 50,
   },
   inlineContainer: {
     flexDirection: "row",
     marginBottom: 30, // Add some space between the lines
+  },
+  btn: {
+    top: "40%",
+    justifyContent: "center",
+    alignSelf: "center",
+    alignItems: "center",
+    borderColor: "white",
+    borderWidth: 3,
+    height: 40,
+    width: 150,
   },
 });
 
