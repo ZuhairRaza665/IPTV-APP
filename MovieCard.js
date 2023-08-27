@@ -41,7 +41,7 @@ const MovieCard = ({
 
     if (matchingShow) {
       // console.log("entering showsnam: ");
-      navigation.navigate("ShowsScreen", { item });
+      navigation.navigate("ShowsScreen", { item, navigation });
     } else {
       // console.log("entering movies: ");
       navigation.navigate("MovieScreen", { item });

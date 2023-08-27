@@ -17,16 +17,18 @@ import ShowsCard from "../ShowsCard";
 
 const screenWidth = Dimensions.get("window").width;
 
-function ShowsScreen({ route }) {
+function ShowsScreen({ route, navigation }) {
   const { item } = route.params;
   const [selectedOption, setSelectedOption] = useState(1);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
-  const options = [
-    { value: "1", label: "Option 1" },
-    { value: "2", label: "Option 2" },
-    { value: "3", label: "Option 3" },
-  ];
+  const [options, setOptions] = useState([]);
+
+  // const options = [
+  //   { value: "1", label: "Option 1" },
+  //   { value: "2", label: "Option 2" },
+  //   { value: "3", label: "Option 3" },
+  // ];
 
   useEffect(() => {
     if (item.id) {
@@ -44,8 +46,22 @@ function ShowsScreen({ route }) {
   useEffect(() => {
     if (data[1]) {
       console.log("Data: ", data[1][1]);
+      const length = Object.keys(data).length;
+      console.log("length 1: ", length);
+
+      // Generate options based on the length of data
+      const generatedOptions = Array.from({ length }, (_, index) => ({
+        value: (index + 1).toString(),
+        label: `Season ${index + 1}`,
+      }));
+
+      setOptions(generatedOptions); // Update the options
     }
   }, [data]);
+
+  useEffect(() => {
+    console.log("options: ", options);
+  }, [options]);
 
   const handleOptionSelect = (selectedOption) => {
     setSelectedOption(selectedOption);
@@ -120,13 +136,20 @@ function ShowsScreen({ route }) {
               </Text>
             </View>
           </View>
-          <View style={{ top: 30 }}>
-            <DropDown options={options} onOptionSelect={handleOptionSelect} />
-            {/* {selectedOption == 1 && <Text style={styles.text}>hello 1</Text>}
-            {selectedOption == 2 && <Text style={styles.text}>hello 2</Text>}
-            {selectedOption == 3 && <Text style={styles.text}>hello 3</Text>} */}
-            <ShowsCard data={data[1]} />
-          </View>
+          {options.length > 0 && (
+            <View style={{ top: 30 }}>
+              <View>
+                <DropDown
+                  options={options}
+                  onOptionSelect={handleOptionSelect}
+                />
+              </View>
+              <View>
+                <ShowsCard data={data[1]} navigation={navigation} />
+                <Text style={{ fontSize: 50 }}>Hello</Text>
+              </View>
+            </View>
+          )}
         </ScrollView>
       )}
     </View>

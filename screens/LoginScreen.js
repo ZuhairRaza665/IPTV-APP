@@ -77,8 +77,8 @@ const LoginScreen = ({ navigation }) => {
       passwordEndIndex !== -1 ? passwordEndIndex : undefined
     );
 
-    console.log("username: ", username);
-    console.log("password: ", password);
+    // console.log("username: ", username);
+    // console.log("password: ", password);
 
     try {
       await signInWithEmailAndPassword(
@@ -86,7 +86,7 @@ const LoginScreen = ({ navigation }) => {
         `${username}@yourdomainname.com`,
         `${password}`
       );
-      console.log("Done logging in");
+      // console.log("Done logging in");
       const userId = auth.currentUser.uid;
 
       // Update the userId state with the authenticated user's ID
@@ -108,7 +108,7 @@ const LoginScreen = ({ navigation }) => {
         // console.log("User's liked list from sign in:", likedList);
         // console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
       } else {
-        // console.log("User document not found:", userId);
+        console.log("User document not found:", userId);
       }
     } catch (loginError) {
       try {
@@ -117,7 +117,7 @@ const LoginScreen = ({ navigation }) => {
           `${username}@yourdomainname.com`,
           `${password}`
         );
-        console.log("Done creating a new user");
+        // console.log("Done creating a new user");
 
         const usersCollectionRef = collection(db, "users");
 
@@ -127,13 +127,13 @@ const LoginScreen = ({ navigation }) => {
             const querySnapshot = await getDocs(usersCollectionRef);
 
             if (querySnapshot.size > 0) {
-              console.log("The 'users' collection exists");
+              // console.log("The 'users' collection exists");
 
               const userDocRef = doc(db, "users", userCredentials.user.uid);
               await setDoc(userDocRef, { liked: [] });
               // console.log("User document added:", userCredentials.user.uid);
             } else {
-              console.log("The 'users' collection doesn't exist");
+              // console.log("The 'users' collection doesn't exist");
             }
           } catch (error) {
             console.error("Error checking 'users' collection:", error);
@@ -150,7 +150,7 @@ const LoginScreen = ({ navigation }) => {
   const fetchDataAndProcess = async () => {
     try {
       // console.log("textInputValue changed:", textInputValue);
-      //
+
       const data = await fetchData(textInputValue);
       setApiData(data);
 
@@ -186,7 +186,7 @@ const LoginScreen = ({ navigation }) => {
 
           try {
             await AsyncStorage.setItem("movies", JSON.stringify(movies));
-            console.log("movies array stored in AsyncStorage");
+            // console.log("movies array stored in AsyncStorage");
           } catch (error) {
             console.error("Error storing movies array:", error);
           }
@@ -224,7 +224,7 @@ const LoginScreen = ({ navigation }) => {
 
           try {
             await AsyncStorage.setItem("showsName", JSON.stringify(showsName));
-            console.log("showsName array stored in AsyncStorage");
+            // console.log("showsName array stored in AsyncStorage");
           } catch (error) {
             console.error("Error storing showsName array:", error);
           }
@@ -235,7 +235,7 @@ const LoginScreen = ({ navigation }) => {
       }
 
       if (auth.currentUser) {
-        console.log("Entering uid ");
+        // console.log("Entering uid ");
         const userId = auth.currentUser.uid;
         // console.log("Logggin from login screen the userid: ", userId);
 
@@ -262,8 +262,8 @@ const LoginScreen = ({ navigation }) => {
           console.log("The user doesnt exist");
         }
       }
-      console.log("errorArray: ", errorArray.length);
-      console.log("uniqueErrorArray: ", uniqueErrorArray.length);
+      // console.log("errorArray: ", errorArray.length);
+      // console.log("uniqueErrorArray: ", uniqueErrorArray.length);
 
       // const index = showsName.findIndex((show) =>
       //   show.title.toLowerCase().includes("silicon valley")

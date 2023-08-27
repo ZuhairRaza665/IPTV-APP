@@ -14,19 +14,19 @@ const CustomDropdown = ({ options, onOptionSelect }) => {
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
-    onOptionSelect(option.value); // Call the callback with the selected option value
+    onOptionSelect(option?.value); // Call the callback with the selected option value
     setIsOpen(false);
   };
 
   let dropdownOptions = options;
-  if (selectedOption.value === options[0].value) {
-    dropdownOptions = options.slice(1);
+  if (selectedOption?.value === options[0]?.value) {
+    dropdownOptions = options?.slice(1);
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.dropdownButton} onTouchStart={toggleDropdown}>
-        <Text style={styles.dropdownButtonText}>{selectedOption.label}</Text>
+        <Text style={styles.dropdownButtonText}>{selectedOption?.label}</Text>
         <Icon
           name={isOpen ? "angle-up" : "angle-down"} // Adjust icon names
           size={18}
@@ -35,13 +35,13 @@ const CustomDropdown = ({ options, onOptionSelect }) => {
       </View>
       {isOpen && (
         <View style={styles.dropdownOptions}>
-          {dropdownOptions.map((option) => (
+          {dropdownOptions?.map((option) => (
             <View
-              key={option.value}
-              style={styles.optionItem}
+              key={option?.value}
+              style={styles?.optionItem}
               onTouchStart={() => handleOptionSelect(option)}
             >
-              <Text style={styles.optionText}>{option.label}</Text>
+              <Text style={styles.optionText}>{option?.label}</Text>
             </View>
           ))}
         </View>

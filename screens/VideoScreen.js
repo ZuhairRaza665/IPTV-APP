@@ -7,8 +7,10 @@ const VideoScreen = ({ route }) => {
   const { item } = route.params;
   const videoUrl = item.link;
   const [isLoading, setIsLoading] = useState(true);
-  const [isVideoReady, setIsVideoReady] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(true);
   const [isVideoStuck, setIsVideoStuck] = useState(false);
+
+  console.log("Item link: ", item.link);
 
   const handleVideoLoad = () => {
     setIsLoading(false);
@@ -53,18 +55,18 @@ const VideoScreen = ({ route }) => {
           onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
           resizeMode="contain"
         />
-        {/* {isLoading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="blue" />
-        </View>
-        )} */}
-        {/* {isVideoStuck && (
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="blue" />
+          </View>
+        )}
+        {isVideoStuck && (
           <View style={styles.stuckContainer}>
             <Text style={styles.stuckText}>
               Video is stuck. Please try again.
             </Text>
           </View>
-        )} */}
+        )}
       </View>
     </View>
   );

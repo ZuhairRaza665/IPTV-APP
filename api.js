@@ -47,7 +47,7 @@ export const fetchData = async (link) => {
           currentIndex++;
         }
       } catch (error) {
-        // console.error("error fetching data ");
+        console.error("error fetching data ");
         return []; // Exit the function here if there's an error
       }
     }
