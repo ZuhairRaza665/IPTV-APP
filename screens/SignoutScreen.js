@@ -18,10 +18,20 @@ const SignOutScreen = ({ navigation }) => {
     }
   }
 
+  async function deleteLogin() {
+    try {
+      await AsyncStorage.removeItem("loginStatus");
+      console.log("Login data deleted successfully");
+    } catch (error) {
+      console.error("Error deleting movies data", error);
+    }
+  }
+
   useEffect(() => {
     deleteMovies("cachedData");
     deleteMovies("movies");
     deleteMovies("showsName");
+    deleteLogin();
     console.log("deleted aysnc");
 
     Alert.alert("Signing Out", "Are you sure you want to sign out?", [

@@ -39,6 +39,8 @@ import { collection, doc, getDocs, getDoc, setDoc } from "firebase/firestore"; /
 import { store } from "../redux/store";
 import { errorArray, uniqueErrorArray } from "../MovieDetailsRequest";
 
+export let loginStatus = "false";
+
 const LoginScreen = ({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [loadingAnimation, setloadingAnimation] = useState(true);
@@ -55,6 +57,28 @@ const LoginScreen = ({ navigation }) => {
   const translateY = useSharedValue(0); // Initial position
   const [userId, setUserId] = useState(null);
   const [refresh, setRefresh] = useState(false);
+
+  const autoLogin = () => {
+    // Simulate a button press by calling the LoginBtnHandle function
+    LoginBtnHandle();
+  };
+
+  const checkLogin = async () => {
+    const data = await AsyncStorage.getItem("loginStatus");
+    loginStatus = JSON.parse(data);
+  };
+
+  useEffect(() => {
+    checkLogin();
+
+    // Call the autoLogin function when the component mounts (app reloads)
+    if (loginStatus === "true") autoLogin();
+  }, []);
+
+  useEffect(() => {
+    console.log("login status from useeffect: ", loginStatus);
+    if (loginStatus === "true") autoLogin();
+  }, [loginStatus]);
 
   useEffect(() => {
     // console.log("Liked array getting updated");
@@ -280,6 +304,8 @@ const LoginScreen = ({ navigation }) => {
       // console.log("avf: ", avf);
       // // console.log("Season 1 Episode 1: ", showsData);
       // // console.log("Season 6 Episode 4: ", showsData[6][4]);
+
+      await AsyncStorage.setItem("loginStatus", JSON.stringify("true"));
       setloadingAnimation(false);
     } catch (error) {
       console.error("Error fetching or processing data:", error);
