@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import {
   FlatList,
@@ -23,6 +23,7 @@ const MovieCard = ({
   likedItems,
   addLikedItem,
   removeLikedItem,
+  isContinueWatching,
 }) => {
   const handleLongPress = (item) => {
     const isItemLiked = likedItems.some(
@@ -36,15 +37,24 @@ const MovieCard = ({
     }
   };
 
+  useEffect(() => {
+    console.log("Movies Card 1st index: ", bigData[0]);
+  }, []);
   const handleOnPress = (item) => {
-    const matchingShow = showsName.find((show) => show.id === item.id);
+    if (isContinueWatching) {
+      const matchingShow = showsName.find((show) => show.id === item.id);
 
-    if (matchingShow) {
-      // console.log("entering showsnam: ");
-      navigation.navigate("ShowsScreen", { item, navigation });
+      navigation.navigate("VideoScreen", { item });
     } else {
-      // console.log("entering movies: ");
-      navigation.navigate("MovieScreen", { item });
+      const matchingShow = showsName.find((show) => show.id === item.id);
+
+      if (matchingShow) {
+        // console.log("entering showsnam: ");
+        navigation.navigate("ShowsScreen", { item, navigation });
+      } else {
+        // console.log("entering movies: ");
+        navigation.navigate("MovieScreen", { item });
+      }
     }
   };
 
@@ -62,7 +72,7 @@ const MovieCard = ({
           <Image
             style={styles.image}
             source={
-              item.poster_path
+              item?.poster_path
                 ? {
                     uri: `https://image.tmdb.org/t/p/original/${item?.poster_path}`,
                   }
@@ -108,7 +118,7 @@ const MovieCard = ({
       <FlatList
         data={bigData}
         renderItem={renderItem}
-        keyExtractor={(item) => item.title}
+        keyExtractor={(item) => item?.title}
         numColumns={numOfColmb}
       />
     );
@@ -116,9 +126,9 @@ const MovieCard = ({
 
   return (
     <FlatList
-      data={bigData.length > 10 ? bigData.slice(0, 10) : bigData}
+      data={bigData?.length > 10 ? bigData.slice(0, 10) : bigData}
       renderItem={renderItem}
-      keyExtractor={(item) => item.title}
+      keyExtractor={(item) => item?.title}
       horizontal={true}
       ListFooterComponent={renderSeeMoreButton}
     />

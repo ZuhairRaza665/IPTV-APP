@@ -1,7 +1,7 @@
 import axios from "axios";
 import { movies, shows, showsName } from "./api";
 import { store } from "./redux/store";
-import { addLikedMovies } from "./redux/actions";
+import { addLikedMovies, addToContinueWatching } from "./redux/actions";
 
 export let errorArray = [];
 export let uniqueErrorArray = [];
@@ -124,6 +124,57 @@ export const getLikedData = async (likedList, dispatch, setRefresh) => {
   // console.log("Liked Movies from getLikedData: ", likedMovies);
 
   dispatch(addLikedMovies(likedMovies));
+  setRefresh(true);
+};
+
+export const getContinueWatchingData = async (
+  watchingList,
+  dispatch,
+  setRefresh
+) => {
+  console.log("Continue Watching List from getLikedData: ", watchingList);
+
+  const continueWatchingArray = watchingList.map((item) => {
+    const foundMovie = movies.find((movie) => movie.title === item.title);
+    if (foundMovie) {
+      return foundMovie;
+    } else {
+      const title = item.title;
+
+      const seasonIndex = title.search(/S\d+/i);
+      const seasonNumber = title.slice(seasonIndex, seasonIndex + 3);
+      console.log("Season Number:", seasonNumber);
+
+      const seasonNumberIndex = title.indexOf(seasonNumber);
+      let finalTitle = title.substring(0, seasonNumberIndex - 1);
+
+      console.log("Final Title:", finalTitle);
+      console.log("Shows index:", shows[1]);
+      const foundTv = showsName.find(
+        (show) => show.title.toLowerCase() === finalTitle.toLowerCase()
+      );
+
+      const foundShow = shows.find(
+        (show) => show.title.toLowerCase() === item.title.toLowerCase()
+      );
+
+      if (foundShow) {
+        console.log("Found show: ", foundShow);
+        foundTv.title = foundShow.title;
+        foundTv.link = foundShow.link;
+        console.log("Final TV: ", foundTv);
+      } else {
+        console.log("Not Found show");
+      }
+
+      console.log("returing tv: ", foundTv);
+      return foundTv;
+    }
+  });
+
+  console.log("Continue Watchings from getLikedData: ", continueWatchingArray);
+
+  dispatch(addToContinueWatching(continueWatchingArray));
   setRefresh(true);
 };
 
@@ -309,7 +360,7 @@ export const fetchOneShowsSeason = async (item) => {
       for (let i = 0; i < seasons[a].length; i++) {
         //run till season length, setting link of each episode for that whole season
         seasons[a][i].link = shows[index].link;
-
+        seasons[a][i].title = shows[index].title;
         index++;
       }
     } catch (error) {

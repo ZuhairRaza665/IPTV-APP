@@ -21,6 +21,7 @@ import { fetchData, movies, showsName, shows } from "../api";
 import {
   fData,
   getLikedData,
+  getContinueWatchingData,
   fData2,
   fData3,
   fetchOneShowsSeason,
@@ -125,9 +126,16 @@ const LoginScreen = ({ navigation }) => {
       if (userDocSnapshot.exists()) {
         const userData = userDocSnapshot.data();
         const likedList = userData.liked || []; // getting liked list from firebase
+        const continueWatchingList = userData["Continue Watching"] || []; // getting liked list from firebase
 
+        console.log("Continue watching 131: ", continueWatchingList[0]);
         if (userId) {
           await getLikedData(likedList, dispatch, setRefresh);
+          await getContinueWatchingData(
+            continueWatchingList,
+            dispatch,
+            setRefresh
+          );
         }
         // console.log("User's liked list from sign in:", likedList);
         // console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state

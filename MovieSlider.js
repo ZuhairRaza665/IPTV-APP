@@ -10,7 +10,7 @@ const MovieSlider = ({ moviesData }) => {
       {moviesData && moviesData.length > 0 ? (
         <Swiper autoplay={true} showsPagination={false}>
           {moviesData.map((movie) => (
-            <View key={movie.title}>
+            <View key={movie}>
               <Image
                 style={[styles.image, { height: screenHeight * 0.3 }]}
                 source={{

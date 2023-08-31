@@ -11,6 +11,7 @@ const VideoScreen = ({ route }) => {
   const [isVideoStuck, setIsVideoStuck] = useState(false);
 
   console.log("Item link: ", item.link);
+  console.log("Item title: ", item.title);
 
   const handleVideoLoad = () => {
     setIsLoading(false);

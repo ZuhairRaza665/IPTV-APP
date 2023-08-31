@@ -33,8 +33,22 @@ const HomeScreen = ({ navigation }) => {
       return indexes;
     };
 
+    const getRandomIndexes2 = (length, count) => {
+      const indexes = [];
+      while (indexes.length < count) {
+        const randomIndex = Math.floor(Math.random() * length);
+        if (
+          showsName[randomIndex].backdrop_path &&
+          !indexes.includes(randomIndex)
+        ) {
+          indexes.push(randomIndex);
+        }
+      }
+      return indexes;
+    };
+
     const randomIndexesForMovies = getRandomIndexes(movies.length, 15);
-    const randomIndexesForShows = getRandomIndexes(showsName.length, 15);
+    const randomIndexesForShows = getRandomIndexes2(showsName.length, 15);
     const randomMovies = randomIndexesForMovies.map((index) => movies[index]);
     const randomShows = randomIndexesForShows.map((index) => showsName[index]);
     const mergedArray = shuffleArray(randomMovies.concat(randomShows));
@@ -42,6 +56,30 @@ const HomeScreen = ({ navigation }) => {
     setRandomMovie(mergedArray);
     setLikedItems(store.getState().likedItems);
   }, []);
+
+  useEffect(() => {
+    const foundMovie = movies.find((movie) =>
+      movie.title.toLowerCase().includes("the mimic")
+    );
+
+    // Check if the movie was found and log it
+    if (foundMovie) {
+      console.log("Found movie:", foundMovie);
+    } else {
+      console.log("Movie not found.");
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log(
+      "Continuing wathcing array 1: ",
+      store.getState()?.continueWatching[0]
+    );
+    console.log(
+      "Continuing wathcing array 2: ",
+      store.getState()?.continueWatching[0][0]
+    );
+  });
 
   return continueWatching.length > 0 ? (
     <ScrollView style={styles.container}>
@@ -55,7 +93,12 @@ const HomeScreen = ({ navigation }) => {
         Continue Watching
       </Text>
       <View style={{ marginTop: 45, paddingLeft: 10 }}>
-        <MovieCard navigation={navigation} direction={null} bigData={random} />
+        <MovieCard
+          navigation={navigation}
+          direction={null}
+          bigData={store.getState().continueWatching[0]}
+          isContinueWatching={true}
+        />
       </View>
       <View style={{ top: 7 }}>
         <Text
