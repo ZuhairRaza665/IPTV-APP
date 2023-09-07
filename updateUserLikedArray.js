@@ -6,6 +6,8 @@ import {
   updateDoc,
   arrayRemove,
 } from "firebase/firestore"; // Import Firestore functions
+import { store } from "./redux/store";
+import { updateContinueWatchingInRedux } from "./redux/actions";
 
 export const updateUserLikedArray = async (itemTitle, action) => {
   const userID = auth.currentUser.uid.toString();
@@ -38,7 +40,12 @@ export const updateUserLikedArray = async (itemTitle, action) => {
   }
 };
 
-export const updateContinueWatching = async (itemTitle, time, action) => {
+export const updateContinueWatching = async (
+  item,
+  newTimeValue,
+  action,
+  dispatch
+) => {
   const userID = auth.currentUser.uid.toString();
 
   try {
@@ -52,7 +59,7 @@ export const updateContinueWatching = async (itemTitle, time, action) => {
 
       if (action === "remove") {
         const newContinueWatchingArray = continueWatchingArray.filter(
-          (item) => item.title !== itemTitle
+          (item) => item.title !== item.title
         );
         await updateDoc(userDocRef, {
           "Continue Watching": newContinueWatchingArray,
@@ -69,24 +76,50 @@ export const updateContinueWatching = async (itemTitle, time, action) => {
         });
 
         console.log("Index is: ", itemIndex);
+
         if (exist) {
           //updating
-          const updatedContinueWatching = (userData["Continue Watching"][
-            itemIndex
-          ].time = newTimeValue);
+          console.log("entering update");
+          let oldTime = userData["Continue Watching"][itemIndex].time;
+          // console.log("Index time: ", oldTime);
 
-          await updateDoc(userDocRef, {
-            "Continue Watching": updatedContinueWatching,
-          });
+          if (newTimeValue > oldTime) {
+            const updatedContinueWatching = [...userData["Continue Watching"]];
+            updatedContinueWatching[itemIndex].time = newTimeValue;
+
+            await updateDoc(userDocRef, {
+              "Continue Watching": updatedContinueWatching,
+            });
+          }
         } else {
           //adding
-          const newContinueWatchingArray = [
-            ...continueWatchingArray,
-            { title: itemTitle, time: time },
-          ];
-          await updateDoc(userDocRef, {
-            "Continue Watching": newContinueWatchingArray,
-          });
+          console.log("entering adding");
+          if (newTimeValue > 0) {
+            const newContinueWatchingArray = [
+              ...continueWatchingArray,
+              { title: item.title, time: newTimeValue },
+            ];
+            await updateDoc(userDocRef, {
+              "Continue Watching": newContinueWatchingArray,
+            });
+
+            const newContinueWatchingArray2 = [
+              ...continueWatchingArray,
+              { item },
+            ];
+
+            console.log(
+              "Before redux storage: ",
+              store.getState()?.continueWatching
+            );
+
+            dispatch(updateContinueWatchingInRedux(newContinueWatchingArray2));
+
+            console.log(
+              "Updated redux storage: ",
+              store.getState()?.continueWatching
+            );
+          }
         }
       }
 

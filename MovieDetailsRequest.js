@@ -132,7 +132,7 @@ export const getContinueWatchingData = async (
   dispatch,
   setRefresh
 ) => {
-  console.log("Continue Watching List from getLikedData: ", watchingList);
+  // console.log("Continue Watching List from getLikedData: ", watchingList);
 
   const continueWatchingArray = watchingList.map((item) => {
     const foundMovie = movies.find((movie) => movie.title === item.title);
@@ -174,7 +174,15 @@ export const getContinueWatchingData = async (
 
   console.log("Continue Watchings from getLikedData: ", continueWatchingArray);
 
-  dispatch(addToContinueWatching(continueWatchingArray));
+  // console.log(
+  //   "Continuing wathcing array before: ",
+  //   store.getState()?.continueWatching
+  // );
+  dispatch(addToContinueWatching(continueWatchingArray)); //ading to redux, adding the wole array and this wouldnt trigger to add to firebase
+  // console.log(
+  //   "Continuing wathcing array after: ",
+  //   store.getState()?.continueWatching
+  // );
   setRefresh(true);
 };
 

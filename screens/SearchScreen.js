@@ -88,6 +88,7 @@ const SearchScreen = ({ navigation }) => {
       console.error("Error fetching data:", error);
       setSearchResults([]);
     }
+    console.log("Seardch length: ", searchResults.length);
   };
 
   return (
@@ -102,7 +103,7 @@ const SearchScreen = ({ navigation }) => {
 
       <SwitchButton setSelectedIndex={setSelectedIndex} />
 
-      <View style={{ top: 23 }}>
+      <View style={{ top: searchResults.length < 3 ? -100 : 23 }}>
         <MovieCard
           navigation={navigation}
           direction="vertical"

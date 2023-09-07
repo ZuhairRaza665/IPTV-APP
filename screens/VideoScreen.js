@@ -2,16 +2,21 @@ import React, { useState, useEffect } from "react";
 import { View, ActivityIndicator, Text } from "react-native";
 import { Video } from "expo-av";
 import * as ScreenOrientation from "expo-screen-orientation";
+import { updateContinueWatching } from "../updateUserLikedArray";
+import { useDispatch } from "react-redux";
 
 const VideoScreen = ({ route }) => {
   const { item } = route.params;
-  const videoUrl = item.link;
+  const { time } = route.params;
   const [isLoading, setIsLoading] = useState(true);
   const [isVideoReady, setIsVideoReady] = useState(true);
   const [isVideoStuck, setIsVideoStuck] = useState(false);
+  let videoLink = item.link;
+  const dispatch = useDispatch();
 
   console.log("Item link: ", item.link);
   console.log("Item title: ", item.title);
+  console.log("Videos time: ", time);
 
   const handleVideoLoad = () => {
     setIsLoading(false);
@@ -29,45 +34,39 @@ const VideoScreen = ({ route }) => {
     } else {
       setIsVideoStuck(false);
     }
+
+    if (status.isPlaying) {
+      // Log the video time when paused or stopped
+      // console.log("Video time: ", status.positionMillis);
+      updateContinueWatching(item, status.positionMillis, null, dispatch);
+    }
   };
 
-  useEffect(() => {
-    const unlockOrientation = async () => {
-      await ScreenOrientation.unlockAsync();
-    };
+  // useEffect(() => {
+  //   const unlockOrientation = async () => {
+  //     await ScreenOrientation.unlockAsync();
+  //   };
 
-    unlockOrientation();
+  //   unlockOrientation();
 
-    return () => {
-      ScreenOrientation.unlockAsync();
-    };
-  }, []);
+  //   return () => {
+  //     ScreenOrientation.unlockAsync();
+  //   };
+  // }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.videoContainer}>
         <Video
-          source={{ uri: videoUrl }}
+          source={{ uri: videoLink }}
           style={[styles.video]}
-          shouldPlay
+          // shouldPlay
           useNativeControls
-          // positionMillis={3600 * 1000} // time to forward
+          positionMillis={time} // time to forward
           onLoad={handleVideoLoad}
           onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
           resizeMode="contain"
         />
-        {isLoading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="blue" />
-          </View>
-        )}
-        {isVideoStuck && (
-          <View style={styles.stuckContainer}>
-            <Text style={styles.stuckText}>
-              Video is stuck. Please try again.
-            </Text>
-          </View>
-        )}
       </View>
     </View>
   );

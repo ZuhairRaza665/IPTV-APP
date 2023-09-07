@@ -45,17 +45,26 @@ const rootReducer = (state = initialState, action) => {
         ),
       };
     case UPDATE_CONTINUE_WATCHING:
-      const updatedItems = state.continueWatching.map((item) => {
-        if (item.title === action.payload.item.title) {
-          // Update the item's time property (or any other property you want to update)
-          return { ...item, time: action.payload.newTimeValue };
-        }
-        return item;
-      });
-
+      // Merge the new array with the existing state
       return {
         ...state,
-        continueWatchingItems: updatedItems,
+        continueWatching: action.payload.map((newItem) => {
+          // Find the existing item in the state by title
+          const existingItem = state.continueWatching.find(
+            (item) => item.title === newItem.title
+          );
+
+          // If an existing item is found, merge its properties with the new item
+          if (existingItem) {
+            return {
+              ...existingItem,
+              ...newItem,
+            };
+          }
+
+          // If no existing item is found, use the new item
+          return newItem;
+        }),
       };
 
     default:

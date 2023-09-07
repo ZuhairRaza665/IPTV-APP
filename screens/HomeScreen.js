@@ -8,7 +8,7 @@ import { store } from "../redux/store";
 const HomeScreen = ({ navigation }) => {
   const [random, setRandomMovie] = useState([]);
   const [likedItems, setLikedItems] = useState([]);
-  const [continueWatching, setContinueWatching] = useState([1, 2, 3]);
+  const [continueWatching, setContinueWatching] = useState([]);
 
   function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -55,35 +55,28 @@ const HomeScreen = ({ navigation }) => {
 
     setRandomMovie(mergedArray);
     setLikedItems(store.getState().likedItems);
+    setContinueWatching(store.getState().continueWatching[0]);
   }, []);
 
   useEffect(() => {
-    const foundMovie = movies.find((movie) =>
-      movie.title.toLowerCase().includes("the mimic")
-    );
-
-    // Check if the movie was found and log it
-    if (foundMovie) {
-      console.log("Found movie:", foundMovie);
-    } else {
-      console.log("Movie not found.");
-    }
-  }, []);
-
-  useEffect(() => {
-    console.log(
-      "Continuing wathcing array 1: ",
-      store.getState()?.continueWatching[0]
-    );
-    console.log(
-      "Continuing wathcing array 2: ",
-      store.getState()?.continueWatching[0][0]
-    );
+    setContinueWatching(store.getState().continueWatching[0]);
+    // console.log("The continue movie is getting updated: ", continueWatching[0]);
   });
 
-  return continueWatching.length > 0 ? (
+  // useEffect(() => {
+  //   console.log(
+  //     "Continuing wathcing array 1: ",
+  //     store.getState()?.continueWatching[0]
+  //   );
+  //   console.log(
+  //     "Continuing wathcing array 2: ",
+  //     store.getState()?.continueWatching[0][0]
+  //   );
+  // });
+
+  return continueWatching?.length > 0 ? (
     <ScrollView style={styles.container}>
-      <View>
+      <View style={{ top: 40 }}>
         <MovieSlider moviesData={random} />
       </View>
 
@@ -96,7 +89,7 @@ const HomeScreen = ({ navigation }) => {
         <MovieCard
           navigation={navigation}
           direction={null}
-          bigData={store.getState().continueWatching[0]}
+          bigData={continueWatching}
           isContinueWatching={true}
         />
       </View>
@@ -110,7 +103,7 @@ const HomeScreen = ({ navigation }) => {
       <View style={{ marginTop: 35, paddingLeft: 10 }}>
         <MovieCard navigation={navigation} direction={null} bigData={random} />
       </View>
-      <View style={{ marginTop: 80 }}></View>
+      <View style={{ marginTop: 60 }}></View>
     </ScrollView>
   ) : (
     <View style={styles.container}>
@@ -118,11 +111,11 @@ const HomeScreen = ({ navigation }) => {
         <MovieSlider moviesData={random} />
       </View>
       <Text
-        style={{ color: "white", fontSize: 30, fontWeight: "bold", top: 60 }}
+        style={{ color: "white", fontSize: 30, fontWeight: "bold", top: "5%" }}
       >
         Explore
       </Text>
-      <View style={{ top: 50 }}>
+      <View style={{ top: "3%" }}>
         <MovieCard navigation={navigation} direction={null} bigData={random} />
       </View>
       <View style={{ marginTop: 80 }}></View>

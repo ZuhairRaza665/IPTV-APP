@@ -2,7 +2,7 @@
 
 import {
   updateUserLikedArray,
-  updateContinueWatching,
+  // updateContinueWatching,
 } from "../updateUserLikedArray";
 
 export const ADD_LIKED_ITEM = "ADD_LIKED_ITEM";
@@ -40,13 +40,10 @@ export const addLikedMovies = (likedMovies) => ({
 });
 
 export const addToContinueWatching = (item, continueFrom) => {
-  if (item.id != null) {
-    updateContinueWatching(
-      (itemTitle = item.title),
-      (time = continueFrom),
-      (action = "add")
-    );
-  }
+  // if (item.id != null) {
+  //   console.log("Entering addtoWatiching");
+  //   updateContinueWatching(item.title, continueFrom, null);
+  // }
   return {
     type: ADD_CONTINUE_WATCHING,
     payload: item,
@@ -54,29 +51,33 @@ export const addToContinueWatching = (item, continueFrom) => {
 };
 
 export const removeToContinueWatching = (item, continueFrom) => {
-  if (item.id != null) {
-    updateContinueWatching(
-      (itemTitle = item.title),
-      (time = continueFrom),
-      (action = "remove")
-    );
-  }
+  // if (item.id != null) {
+  //   updateContinueWatching(
+  //     (itemTitle = item.title),
+  //     (time = continueFrom),
+  //     (action = "remove")
+  //   );
+  // }
   return {
     type: REMOVE_CONTINUE_WATCHING,
     payload: item,
   };
 };
 
-export const updateContinueWatchingItem = (item, continueFrom) => {
-  if (item.id != null) {
-    updateContinueWatching(
-      (itemTitle = item.title),
-      (time = continueFrom),
-      (action = "update")
-    );
-  }
+export const updateContinueWatchingInRedux = (newContinueWatchingArray) => {
   return {
     type: UPDATE_CONTINUE_WATCHING,
-    payload: { item, newTimeValue },
+    payload: newContinueWatchingArray,
   };
 };
+
+// export const updateContinueWatchingItem = (item, time) => {
+//   if (item.title != null) {
+//     console.log("Entering update Continue Watching");
+//     updateContinueWatching(item.title, time, null);
+//   }
+//   return {
+//     type: UPDATE_CONTINUE_WATCHING,
+//     payload: item,
+//   };
+// };

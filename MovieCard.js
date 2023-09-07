@@ -13,6 +13,14 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { addLikedItem, removeLikedItem } from "./redux/actions";
 import { showsName } from "./api";
 import LottieView from "lottie-react-native"; // Import LottieView
+import { auth, db } from "./firebase"; // Import the Firebase initialization
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  arrayRemove,
+} from "firebase/firestore"; // Import Firestore functions
 
 const MovieCard = ({
   navigation,
@@ -37,14 +45,60 @@ const MovieCard = ({
     }
   };
 
-  useEffect(() => {
-    console.log("Movies Card 1st index: ", bigData[0]);
-  }, []);
-  const handleOnPress = (item) => {
-    if (isContinueWatching) {
-      const matchingShow = showsName.find((show) => show.id === item.id);
+  // useEffect(() => {
+  //   console.log("Movies Card 1st index: ", bigData[0]);
+  // }, []);
 
-      navigation.navigate("VideoScreen", { item });
+  const getTime = async (title) => {
+    const userID = auth.currentUser.uid.toString();
+
+    try {
+      const userDocRef = doc(db, "users", userID);
+
+      // Get the current data of the user document
+      const userDocSnapshot = await getDoc(userDocRef);
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
+        const continueWatchingArray = userData["Continue Watching"];
+
+        let exist = false;
+        let itemIndex = -1;
+
+        userData["Continue Watching"].map((existingItem, index) => {
+          if (existingItem.title === title) {
+            exist = true;
+            itemIndex = index;
+          }
+        });
+
+        console.log("Index is: ", itemIndex);
+
+        if (exist) {
+          let oldTime = userData["Continue Watching"][itemIndex].time;
+          console.log("time from old time: ", oldTime);
+          return oldTime;
+        }
+      }
+    } catch (error) {
+      console.error("Error updating liked array:", error);
+    }
+  };
+
+  const handleOnPress = async (item) => {
+    if (isContinueWatching) {
+      try {
+        const time = await getTime(item.title);
+        if (time) {
+          console.log("Time 123: ", time);
+          navigation.navigate("VideoScreen", { item, time });
+        } else {
+          let time2 = 0;
+          console.log("Time 123: ", time);
+          navigation.navigate("VideoScreen", { item, time2 });
+        }
+      } catch (error) {
+        // console.error("Error getting time:", error);
+      }
     } else {
       const matchingShow = showsName.find((show) => show.id === item.id);
 

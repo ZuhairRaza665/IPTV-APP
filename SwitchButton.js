@@ -41,8 +41,10 @@ const SwitchButton = ({ setSelectedIndex }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    // position: "absolute",
+    // top: 40,
+    // justifyContent: "center",
+    // alignItems: "center",
     paddingTop: 20,
   },
   innerContainer: {
