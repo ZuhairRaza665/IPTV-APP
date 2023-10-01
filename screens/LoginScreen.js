@@ -49,9 +49,7 @@ const LoginScreen = ({ navigation }) => {
   const [DoneAnimationCompleted, setDoneAnimationCompleted] = useState(false);
   const [shouldResetAnimations, setShouldResetAnimations] = useState(false); // Add this state
   const [apiData, setApiData] = useState([]);
-  const [textInputValue, setTextInputValue] = useState(
-    "http://b1g.one/get.php?username=entireservices&password=entireservices&type=m3u&output=ts"
-  );
+  const [textInputValue, setTextInputValue] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
   const likedItems = useSelector((state) => state.likedItems);
@@ -61,7 +59,7 @@ const LoginScreen = ({ navigation }) => {
 
   const autoLogin = () => {
     // Simulate a button press by calling the LoginBtnHandle function
-    LoginBtnHandle();
+    LoginBtnHandle(true);
   };
 
   const checkLogin = async () => {
@@ -86,95 +84,82 @@ const LoginScreen = ({ navigation }) => {
     setRefresh(true);
   }, [refresh]);
 
-  const handleLogin = async () => {
-    const usernameIndex = textInputValue.indexOf("username=") + 9;
-    const passwordIndex = textInputValue.indexOf("password=") + 9;
-
-    const passwordEndIndex = textInputValue.indexOf("&", passwordIndex);
-
-    const username = textInputValue.substring(
-      usernameIndex,
-      textInputValue.indexOf("&", usernameIndex)
-    );
-
-    const password = textInputValue.substring(
-      passwordIndex,
-      passwordEndIndex !== -1 ? passwordEndIndex : undefined
-    );
-
-    // console.log("username: ", username);
-    // console.log("password: ", password);
-
+  const signInUser = async (username, password) => {
     try {
       await signInWithEmailAndPassword(
         auth,
         `${username}@yourdomainname.com`,
         `${password}`
       );
-      // console.log("Done logging in");
-      const userId = auth.currentUser.uid;
+      return auth.currentUser.uid;
+    } catch (loginError) {
+      return null;
+    }
+  };
 
-      // Update the userId state with the authenticated user's ID
-      setUserId(userId);
+  const createUserAndSignIn = async (username, password) => {
+    try {
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        `${username}@yourdomainname.com`,
+        `${password}`
+      );
+      return userCredentials.user.uid;
+    } catch (createUserError) {
+      return null;
+    }
+  };
 
-      // Reference to the user's document
-      const userDocRef = doc(db, "users", userId);
-
-      // Get the user's document data
-      const userDocSnapshot = await getDoc(userDocRef);
-
-      if (userDocSnapshot.exists()) {
-        const userData = userDocSnapshot.data();
-        const likedList = userData.liked || []; // getting liked list from firebase
-        const continueWatchingList = userData["Continue Watching"] || []; // getting liked list from firebase
-
-        console.log("Continue watching 131: ", continueWatchingList[0]);
-        if (userId) {
-          await getLikedData(likedList, dispatch, setRefresh);
+  const handleLogin = async (isAuto) => {
+    if (isAuto) {
+      // Auto-login logic
+      const userId3 = await AsyncStorage.getItem("userToken");
+      if (userId3) {
+        setUserId(userId3);
+        const userDocRef = doc(db, "users", userId);
+        const userDocSnapshot = await getDoc(userDocRef);
+        if (userDocSnapshot.exists()) {
+          const userData = userDocSnapshot.data();
+          await getLikedData(userData.liked || [], dispatch, setRefresh);
           await getContinueWatchingData(
-            continueWatchingList,
+            userData["Continue Watching"] || [],
             dispatch,
             setRefresh
           );
         }
-        // console.log("User's liked list from sign in:", likedList);
-        // console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
-      } else {
-        console.log("User document not found:", userId);
       }
-    } catch (loginError) {
-      try {
-        const userCredentials = await createUserWithEmailAndPassword(
-          auth,
-          `${username}@yourdomainname.com`,
-          `${password}`
-        );
-        // console.log("Done creating a new user");
+    } else {
+      const usernameIndex = textInputValue.indexOf("username=") + 9;
+      const passwordIndex = textInputValue.indexOf("password=") + 9;
+      const passwordEndIndex = textInputValue.indexOf("&", passwordIndex);
+      const username = textInputValue.substring(
+        usernameIndex,
+        textInputValue.indexOf("&", usernameIndex)
+      );
+      const password = textInputValue.substring(
+        passwordIndex,
+        passwordEndIndex !== -1 ? passwordEndIndex : undefined
+      );
 
-        const usersCollectionRef = collection(db, "users");
+      const userId2 =
+        (await signInUser(username, password)) ||
+        (await createUserAndSignIn(username, password));
 
-        // Check if the "users" collection exists
-        const checkUsersCollection = async () => {
-          try {
-            const querySnapshot = await getDocs(usersCollectionRef);
+      if (userId2) {
+        AsyncStorage.setItem("userToken", userId2);
+        setUserId(userId2);
+        const userDocRef = doc(db, "users", userId2);
+        const userDocSnapshot = await getDoc(userDocRef);
 
-            if (querySnapshot.size > 0) {
-              // console.log("The 'users' collection exists");
-
-              const userDocRef = doc(db, "users", userCredentials.user.uid);
-              await setDoc(userDocRef, { liked: [] });
-              // console.log("User document added:", userCredentials.user.uid);
-            } else {
-              // console.log("The 'users' collection doesn't exist");
-            }
-          } catch (error) {
-            console.error("Error checking 'users' collection:", error);
-          }
-        };
-
-        checkUsersCollection();
-      } catch (createUserError) {
-        console.error("Error in creating user");
+        if (userDocSnapshot.exists()) {
+          const userData = userDocSnapshot.data();
+          await getLikedData(userData.liked || [], dispatch, setRefresh);
+          await getContinueWatchingData(
+            userData["Continue Watching"] || [],
+            dispatch,
+            setRefresh
+          );
+        }
       }
     }
   };
@@ -191,6 +176,8 @@ const LoginScreen = ({ navigation }) => {
         setloadingAnimation(false);
         return; // Exit the function
       }
+
+      console.log("API DATA: ", data.slice(0, 10));
 
       const storedData = await AsyncStorage.getItem("movies");
 
@@ -209,6 +196,7 @@ const LoginScreen = ({ navigation }) => {
         // console.log("movies chached stored data: ", movies[2131]);
         // console.log("Movies length after:  ", movies.length);
       } else {
+        console.log("movies 0th index: ", movies[0]);
         if (movies[0] != null) {
           // console.log("Logging movies 0 from login screen: ", movies[0]);
           await fData();
@@ -223,8 +211,7 @@ const LoginScreen = ({ navigation }) => {
             console.error("Error storing movies array:", error);
           }
         } else {
-          console.log("API not working");
-          setText("API not working");
+          console.log("API not working 1");
         }
       }
 
@@ -261,8 +248,7 @@ const LoginScreen = ({ navigation }) => {
             console.error("Error storing showsName array:", error);
           }
         } else {
-          console.log("API not working");
-          setText("API not working");
+          console.log("API not working 2");
         }
       }
 
@@ -358,19 +344,28 @@ const LoginScreen = ({ navigation }) => {
       setResetFlag(false);
     }
   };
-  const LoginBtnHandle = () => {
-    if (textInputValue.length > 0) {
+  const LoginBtnHandle = (isAuto) => {
+    if (isAuto) {
+      console.log("Entering isAuto");
       setModalVisible(!isModalVisible);
       fetchDataAndProcess();
     } else {
-      setErrorMessage("Please enter a valid link.");
+      if (textInputValue.length > 0) {
+        setModalVisible(!isModalVisible);
+        fetchDataAndProcess();
+      } else {
+        setErrorMessage("Please enter a valid link.");
+      }
     }
   };
 
   useEffect(() => {
-    if (apiData.length > 0) {
-      handleLogin();
+    if (textInputValue.length > 0) {
+      console.log("textInputValue length > 0");
+      handleLogin(false);
       // console.log("data: ", apiData[0]);
+    } else {
+      handleLogin(true);
     }
   }, [apiData]);
 
@@ -417,7 +412,10 @@ const LoginScreen = ({ navigation }) => {
           setErrorMessage(""); // Clear the error message when input changes
         }}
       />
-      <TouchableOpacity style={styles.button} onPress={LoginBtnHandle}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => LoginBtnHandle(false)}
+      >
         <Text style={styles.text3}>Login</Text>
       </TouchableOpacity>
       <Modal

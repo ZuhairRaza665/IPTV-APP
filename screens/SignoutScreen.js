@@ -9,7 +9,7 @@ export const setResetFlag = (value) => {
 };
 
 const SignOutScreen = ({ navigation }) => {
-  async function deleteMovies(key) {
+  async function deleteAsync(key) {
     try {
       await AsyncStorage.removeItem(key);
       console.log("Movies data deleted successfully");
@@ -18,19 +18,13 @@ const SignOutScreen = ({ navigation }) => {
     }
   }
 
-  async function deleteLogin() {
-    try {
-      await AsyncStorage.removeItem("loginStatus");
-      console.log("Login data deleted successfully");
-    } catch (error) {
-      console.error("Error deleting movies data", error);
-    }
-  }
-
   useEffect(() => {
-    deleteMovies("cachedData");
-    deleteMovies("movies");
-    deleteMovies("showsName");
+    deleteAsync("cachedData");
+    deleteAsync("movies");
+    deleteAsync("showsName");
+    deleteAsync("userToken");
+    deleteAsync("loginStatus");
+
     deleteLogin();
     console.log("deleted aysnc");
 
