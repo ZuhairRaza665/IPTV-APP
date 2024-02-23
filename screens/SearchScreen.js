@@ -1,9 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, StyleSheet, Switch, Text } from "react-native";
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  Switch,
+  Text,
+  Keyboard,
+  Dimensions,
+  VirtualizedList,
+} from "react-native";
 import MovieCard from "../MovieCard";
 import { movies, showsName } from "../api";
 import SwitchButton from "../SwitchButton";
-import { errorArray } from "../MovieDetailsRequest";
+import {
+  errorArray,
+  fetchMovieData,
+  fetchShowsDetails,
+} from "../MovieDetailsRequest";
+import { movieIndexesWithPath, showIndexesWithPath } from "./HomeScreen";
 
 const generateRandomIndexes = (maxIndex, count) => {
   const indexes = [];
@@ -20,76 +34,90 @@ const SearchScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [moviesDataCompleted, setMoviesDataCompleted] = useState(false);
-  const [showsDataCompleted, setShowsDataCompleted] = useState(false);
-  const [randomMoviesResults, setRandomMoviesResults] = useState([]);
-  const [randomShowsResults, setRandomShowsResults] = useState([]);
 
-  console.log("errorArray: ", errorArray);
+  const temp = [];
+
+  const fMovies = async (movie) => {
+    await fetchMovieData(movie);
+  };
+
+  const fShows = async (show) => {
+    await fetchShowsDetails(show);
+  };
 
   useEffect(() => {
-    console.log("Selected Index:", selectedIndex);
-    handleSearch();
-  }, [searchText, selectedIndex]);
+    if (searchText.length === 0) {
+      console.log("Movies indexes from search: ", movieIndexesWithPath);
+      console.log("Shows indexes from search: ", showIndexesWithPath);
+
+      const indexesWithPath =
+        selectedIndex === 0 ? movieIndexesWithPath : showIndexesWithPath;
+      const sourceArray = selectedIndex === 0 ? movies : showsName;
+
+      for (let i = 0; i < indexesWithPath.length; i++) {
+        temp.push(sourceArray[indexesWithPath[i]]);
+      }
+
+      setSearchResults(temp);
+    }
+  }, [selectedIndex, searchText]);
+
+  useEffect(() => {
+    setSearchText("");
+  }, [selectedIndex]);
 
   const handleSearch = async () => {
     try {
-      if (searchText.length === 0) {
-        if (selectedIndex === 0) {
-          if (!moviesDataCompleted) {
-            const randomIndexesMovies = generateRandomIndexes(
-              movies.length - 1,
-              40
-            );
-            const randomResultsMovies = randomIndexesMovies.map(
-              (index) => movies[index]
-            );
+      // console.log("Entring fill state");
+      // Code for filtering based on search text and selectedIndex
+      let filteredResults = [];
+      if (selectedIndex === 0) {
+        filteredResults = movies.filter((result) =>
+          result.title.toLowerCase().includes(` ${searchText.toLowerCase()}`)
+        );
 
-            setRandomMoviesResults(randomResultsMovies);
-            setSearchResults(randomResultsMovies);
-            setMoviesDataCompleted(true);
-          } else {
-            console.log("where moviesDataCompleted");
-            setSearchResults(randomMoviesResults);
-          }
-        } else {
-          if (!showsDataCompleted) {
-            const randomIndexesShows = generateRandomIndexes(
-              showsName.length - 1,
-              40
-            );
-            const randomResultsShows = randomIndexesShows.map(
-              (index) => showsName[index]
-            );
-            setRandomShowsResults(randomResultsShows);
-            setShowsDataCompleted(true);
-            setSearchResults(randomResultsShows);
-          } else {
-            setSearchResults(randomShowsResults);
-          }
-        }
+        // console.log("length is: ", filteredResults.length);
+        const promises = filteredResults.slice(0, 10).map(async (result) => {
+          await fMovies(result);
+        });
+
+        await Promise.all(promises);
+
+        // console.log("Movies");
       } else {
-        // Code for filtering based on search text and selectedIndex
-        let filteredResults = [];
-        if (selectedIndex === 0) {
-          filteredResults = movies.filter((result) =>
-            result.title.toLowerCase().includes(searchText.toLowerCase())
-          );
-          console.log("Movies");
-        } else {
-          filteredResults = showsName.filter((result) =>
-            result.title.toLowerCase().includes(searchText.toLowerCase())
-          );
-          console.log("TV");
-        }
-        setSearchResults(filteredResults);
+        // console.log("searching on shows: ");
+
+        filteredResults = showsName.filter((result) =>
+          result.title.toLowerCase().includes(` ${searchText.toLowerCase()}`)
+        );
+        // console.log("TV");
+
+        const promises = filteredResults.slice(0, 10).map(async (result) => {
+          await fShows(result);
+        });
+
+        await Promise.all(promises);
       }
+
+      // // console.log("Filtered result is: ", filteredResults);
+      setSearchResults(filteredResults);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching data 2:", error);
       setSearchResults([]);
     }
-    console.log("Seardch length: ", searchResults.length);
+    // // console.log("Seardch length: ", searchResults.length);
   };
+
+  const handleSearchSubmit = () => {
+    // Close the keyboard
+    Keyboard.dismiss();
+    // Trigger the search
+    handleSearch();
+  };
+
+  const renderItem = ({ item }) => (
+    <MovieCard navigation={navigation} item={item} />
+  );
 
   return (
     <View style={styles.container}>
@@ -99,6 +127,8 @@ const SearchScreen = ({ navigation }) => {
         value={searchText}
         onChangeText={(text) => setSearchText(text)}
         style={styles.text}
+        onSubmitEditing={handleSearchSubmit}
+        // autoCorrect={false}
       />
 
       <SwitchButton setSelectedIndex={setSelectedIndex} />
@@ -107,8 +137,8 @@ const SearchScreen = ({ navigation }) => {
         <MovieCard
           navigation={navigation}
           direction="vertical"
-          numOfColmb={2}
-          bigData={searchResults}
+          numOfColmb={Math.floor(Dimensions.get("window").width / 165)}
+          bigData={searchResults?.slice(0, 10)}
         />
       </View>
     </View>

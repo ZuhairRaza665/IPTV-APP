@@ -7,37 +7,37 @@ export let errorArray = [];
 export let uniqueErrorArray = [];
 
 export const fData = async () => {
-  // console.log("starting movie");
+  // // console.log("starting movie");
   const movieLength = movies.length;
   const batchSize = 100;
   const batches = Math.ceil(movieLength / batchSize);
   let breakLoop = false;
 
   for (let batchIndex = 0; batchIndex < batches; batchIndex++) {
-    // console.log("Batch Index for movies:", batchIndex); // Logging batch index
+    // // console.log("Batch Index for movies:", batchIndex); // Logging batch index
     const batchStart = batchIndex * batchSize;
     const batchEnd = Math.min((batchIndex + 1) * batchSize, movieLength);
 
-    // console.log("Batch Start for movies:", batchStart); // Logging batch start index
-    // console.log("length 2 for movies: ", movieLength);
-    // console.log("Batch End for movies:", batchEnd); // Logging batch end index
+    // // console.log("Batch Start for movies:", batchStart); // Logging batch start index
+    // // console.log("length 2 for movies: ", movieLength);
+    // // console.log("Batch End for movies:", batchEnd); // Logging batch end index
 
     const fetchPromises = [];
 
     for (let i = batchStart; i < batchEnd; i++) {
       if (i < movieLength) {
-        // console.log("Fetching data for movie:", i); // Logging the movie index being fetched
+        // // console.log("Fetching data for movie:", i); // Logging the movie index being fetched
         fetchPromises.push(fetchMovieData(movies[i]));
-        // console.log("Fetching data for movie:", i); // Logging the movie index being fetched
+        // // console.log("Fetching data for movie:", i); // Logging the movie index being fetched
       } else {
-        console.log("end movie");
+        // console.log("end movie");
         breakLoop = true;
         break;
       }
     }
 
     if (breakLoop) {
-      console.log("end movie");
+      // console.log("end movie");
       break;
     }
 
@@ -45,7 +45,37 @@ export const fData = async () => {
   }
 };
 
-const fetchMovieData = async (item) => {
+const languages = [
+  "EN:",
+  "FR:",
+  "AR:",
+  "AF:",
+  "SW:",
+  "DE:",
+  "PO:",
+  "IT:",
+  "RO:",
+  "IN:",
+  "NL:",
+  "ES:",
+  "KR:",
+  "PL:",
+  "RU:",
+  "PK:",
+  "JP:",
+  "CN:",
+  "KO:",
+  "TR:",
+  "IN-Telugu:",
+  "IN-Mal:",
+  "IN-EN:",
+  "BR:",
+  "Tamil:",
+  "FR|",
+  "(FR)",
+];
+
+export const fetchMovieData = async (item) => {
   let fullTitle;
   let nam = null;
   let year = null;
@@ -53,10 +83,10 @@ const fetchMovieData = async (item) => {
 
   if (item) {
     fullTitle = item.title;
-    index = fullTitle.indexOf(" - ");
+    index = fullTitle?.indexOf(" - ");
 
     if (index == -1) {
-      index = fullTitle.indexOf("(");
+      index = fullTitle?.indexOf("(");
       nam = fullTitle.substring(0, index - 2);
       year = fullTitle.substring(index + 1, index + 5);
     } else {
@@ -66,8 +96,35 @@ const fetchMovieData = async (item) => {
   }
 
   if (nam != null) {
+    for (const lang of languages) {
+      if (nam.startsWith(lang)) {
+        nam = nam.substring(lang.length).trim();
+      }
+    }
+
     const modifiedName = nam.replace(/ /g, "%20");
-    const API_ENDPOINT = `https://api.themoviedb.org/3/search/movie?query=${modifiedName}&%20US&primary_release_year=${year}&page=1&api_key=d159eaf1a8e9ef27976592ad48ed5a2a`;
+
+    function isYearValid(year) {
+      // Convert the year to an integer
+      const yearNumber = parseInt(year);
+
+      // Check if the yearNumber is a valid number and within a reasonable range
+      if (!isNaN(yearNumber) && yearNumber >= 1000 && yearNumber <= 9999) {
+        return true; // Valid year
+      } else {
+        return false; // Not a valid year
+      }
+    }
+
+    const isYear = isYearValid(year);
+
+    let API_ENDPOINT;
+
+    if (isYear) {
+      API_ENDPOINT = `https://api.themoviedb.org/3/search/movie?query=${modifiedName}&%20US&primary_release_year=${year}&page=1&api_key=d159eaf1a8e9ef27976592ad48ed5a2a`;
+    } else {
+      API_ENDPOINT = `https://api.themoviedb.org/3/search/movie?query=${modifiedName}&%20US&page=1&api_key=d159eaf1a8e9ef27976592ad48ed5a2a`;
+    }
 
     try {
       const response = await axios.get(API_ENDPOINT);
@@ -81,6 +138,7 @@ const fetchMovieData = async (item) => {
         await detailsPromise;
       }
     } catch (error) {
+      // console.log("Error");
       errorArray.push(item);
     }
   }
@@ -106,10 +164,10 @@ const fetchMovieDetails = async (item, movieID) => {
 };
 
 export const getLikedData = async (likedList, dispatch, setRefresh) => {
-  // console.log("Liked List from getLikedData: ", likedList);
-  // console.log("movie 100 from getLikedData: ", movies[100]);
-  // console.log("movie 200 from getLikedData: ", movies[200]);
-  // console.log("movie -50 from getLikedData: ", movies[movies.length - 50]);
+  // // console.log("Liked List from getLikedData: ", likedList);
+  // // console.log("movie 100 from getLikedData: ", movies[100]);
+  // // console.log("movie 200 from getLikedData: ", movies[200]);
+  // // console.log("movie -50 from getLikedData: ", movies[movies.length - 50]);
 
   const likedMovies = likedList.map((likedTitle) => {
     const foundMovie = movies.find((movie) => movie.title === likedTitle);
@@ -121,7 +179,7 @@ export const getLikedData = async (likedList, dispatch, setRefresh) => {
     }
   });
 
-  // console.log("Liked Movies from getLikedData: ", likedMovies);
+  // // console.log("Liked Movies from getLikedData: ", likedMovies);
 
   dispatch(addLikedMovies(likedMovies));
   setRefresh(true);
@@ -132,7 +190,7 @@ export const getContinueWatchingData = async (
   dispatch,
   setRefresh
 ) => {
-  // console.log("Continue Watching List from getLikedData: ", watchingList);
+  // // console.log("Continue Watching List from getLikedData: ", watchingList);
 
   const continueWatchingArray = watchingList.map((item) => {
     const foundMovie = movies.find((movie) => movie.title === item.title);
@@ -142,14 +200,14 @@ export const getContinueWatchingData = async (
       const title = item.title;
 
       const seasonIndex = title.search(/S\d+/i);
-      const seasonNumber = title.slice(seasonIndex, seasonIndex + 3);
-      console.log("Season Number:", seasonNumber);
+      const seasonNumber = title?.slice(seasonIndex, seasonIndex + 3);
+      // console.log("Season Number:", seasonNumber);
 
-      const seasonNumberIndex = title.indexOf(seasonNumber);
+      const seasonNumberIndex = title?.indexOf(seasonNumber);
       let finalTitle = title.substring(0, seasonNumberIndex - 1);
 
-      console.log("Final Title:", finalTitle);
-      console.log("Shows index:", shows[1]);
+      // console.log("Final Title:", finalTitle);
+      // console.log("Shows index:", shows[1]);
       const foundTv = showsName.find(
         (show) => show.title.toLowerCase() === finalTitle.toLowerCase()
       );
@@ -159,27 +217,27 @@ export const getContinueWatchingData = async (
       );
 
       if (foundShow) {
-        console.log("Found show: ", foundShow);
+        // console.log("Found show: ", foundShow);
         foundTv.title = foundShow.title;
         foundTv.link = foundShow.link;
-        console.log("Final TV: ", foundTv);
+        // console.log("Final TV: ", foundTv);
       } else {
-        console.log("Not Found show");
+        // console.log("Not Found show");
       }
 
-      console.log("returing tv: ", foundTv);
+      // console.log("returing tv: ", foundTv);
       return foundTv;
     }
   });
 
-  console.log("Continue Watchings from getLikedData: ", continueWatchingArray);
+  // console.log("Continue Watchings from getLikedData: ", continueWatchingArray);
 
-  // console.log(
+  // // console.log(
   //   "Continuing wathcing array before: ",
   //   store.getState()?.continueWatching
   // );
   dispatch(addToContinueWatching(continueWatchingArray)); //ading to redux, adding the wole array and this wouldnt trigger to add to firebase
-  // console.log(
+  // // console.log(
   //   "Continuing wathcing array after: ",
   //   store.getState()?.continueWatching
   // );
@@ -187,37 +245,37 @@ export const getContinueWatchingData = async (
 };
 
 export const fData2 = async () => {
-  console.log("Entering shows");
+  // console.log("Entering shows");
   const showsLength = showsName.length;
-  console.log("Shows length: ", showsLength);
+  // console.log("Shows length: ", showsLength);
   const batchSize = 100; // Number of movies to fetch in each batch
   const batches = Math.ceil(showsLength / batchSize);
   let breakLoop = false;
 
   for (let batchIndex = 0; batchIndex < batches; batchIndex++) {
-    // console.log("Batch Index for tv:", batchIndex); // Logging batch index
+    // // console.log("Batch Index for tv:", batchIndex); // Logging batch index
     const batchStart = batchIndex * batchSize;
     const batchEnd = Math.min((batchIndex + 1) * batchSize, showsLength);
 
-    // console.log("Batch Start for tv:", batchStart); // Logging batch start index
-    // console.log("Batch End for tv:", batchEnd); // Logging batch end index
+    // // console.log("Batch Start for tv:", batchStart); // Logging batch start index
+    // // console.log("Batch End for tv:", batchEnd); // Logging batch end index
 
     const fetchPromises = [];
 
     for (let i = batchStart; i < batchEnd; i++) {
       if (i < showsLength) {
-        // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
+        // // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
         fetchPromises.push(fetchShowsDetails(showsName[i]));
-        // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
+        // // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
       } else {
-        console.log("end shows");
+        // console.log("end shows");
         breakLoop = true;
         break;
       }
     }
 
     if (breakLoop) {
-      console.log("end shows");
+      // console.log("end shows");
       break;
     }
 
@@ -235,8 +293,16 @@ export const fData2 = async () => {
     }
   });
 };
-const fetchShowsDetails = async (item) => {
-  const title = item.title;
+
+export const fetchShowsDetails = async (item) => {
+  let title = item.title;
+
+  for (const lang of languages) {
+    if (title.startsWith(lang)) {
+      title = title.substring(lang.length).trim();
+    }
+  }
+
   const modifiedName = title.replace(/ /g, "%20");
   const API_ENDPOINT = `https://api.themoviedb.org/3/search/tv?query=${modifiedName}&page=1&api_key=d159eaf1a8e9ef27976592ad48ed5a2a`;
 
@@ -245,7 +311,7 @@ const fetchShowsDetails = async (item) => {
     const data = await response.json();
     const result = data.results[0];
     item.id = result.id;
-    item.title = result.name;
+    // item.title = result.name;
     item.backdrop_path = result.backdrop_path;
     item.genreNames = result.genre_ids;
     item.overview = result.overview;
@@ -260,37 +326,37 @@ const fetchShowsDetails = async (item) => {
 };
 
 export const fData3 = async () => {
-  // console.log("Entering shows");
+  // // console.log("Entering shows");
   const showsLength = shows.length;
-  console.log("Shows length: ", showsLength);
+  // console.log("Shows length: ", showsLength);
   const batchSize = 300; // Number of movies to fetch in each batch
   const batches = Math.ceil(showsLength / batchSize);
   let breakLoop = false;
 
   for (let batchIndex = 0; batchIndex < batches; batchIndex++) {
-    console.log("Batch Index for shows:", batchIndex); // Logging batch index
+    // console.log("Batch Index for shows:", batchIndex); // Logging batch index
     const batchStart = batchIndex * batchSize;
     const batchEnd = Math.min((batchIndex + 1) * batchSize, showsLength);
 
-    console.log("Batch Start for shows:", batchStart); // Logging batch start index
-    console.log("Batch End for shows:", batchEnd); // Logging batch end index
+    // console.log("Batch Start for shows:", batchStart); // Logging batch start index
+    // console.log("Batch End for shows:", batchEnd); // Logging batch end index
 
     const fetchPromises = [];
 
     for (let i = batchStart; i < batchEnd; i++) {
       if (i < showsLength) {
-        // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
+        // // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
         fetchPromises.push(fetchShowsEpisodes(shows[i]));
-        // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
+        // // console.log("Fetching data for tvshows:", i); // Logging the movie index being fetched
       } else {
-        console.log("end shows");
+        // console.log("end shows");
         breakLoop = true;
         break;
       }
     }
 
     if (breakLoop) {
-      console.log("end shows");
+      // console.log("end shows");
       break;
     }
 
@@ -300,9 +366,9 @@ export const fData3 = async () => {
 
 const fetchShowsEpisodes = async (item) => {
   const title = item.title;
-  const seasonIndex = title.indexOf("S");
+  const seasonIndex = title?.indexOf("S");
   const season = title.substring(seasonIndex + 1, seasonIndex + 2);
-  const episodeIndex = title.indexOf("E");
+  const episodeIndex = title?.indexOf("E");
   const episode = title.substring(episodeIndex + 1, episodeIndex + 2);
   const API_ENDPOINT = `https://api.themoviedb.org/3/tv/${item.id}/season/${season}/${episode}/1?&api_key=d159eaf1a8e9ef27976592ad48ed5a2a`;
 
@@ -322,59 +388,61 @@ const fetchShowsEpisodes = async (item) => {
   }
 };
 
-export const fetchOneShowsSeason = async (item) => {
-  // console.log("Entering fetchOneShowsSeason");
+export const fetchOneShowsSeason = async (
+  item,
+  selectedSeason,
+  setTotalSeasons
+) => {
+  console.log("Hello 1");
   const API_KEY = "d159eaf1a8e9ef27976592ad48ed5a2a";
-
   const API_ENDPOINT1 = `https://api.themoviedb.org/3/tv/${item.id}?&api_key=${API_KEY}`;
 
+  console.log("item id from mvs: ", item.id);
   let number_of_seasons = null;
+  let seasons = {};
+
   try {
+    console.log("Hello 2");
     const response = await fetch(API_ENDPOINT1);
     const data = await response.json();
     number_of_seasons = data.number_of_seasons;
+    console.log("Hello 3");
   } catch (error) {
     console.error("Error fetching show information:", error);
+    console.log("Hello 4");
     return;
   }
-
+  setTotalSeasons(number_of_seasons);
   console.log("total seasons: ", number_of_seasons);
 
-  let seasons = {};
-
-  for (let i = 1; i <= number_of_seasons; i++) {
-    seasons[i] = [];
-  }
-
-  console.log("seasons array: ", seasons); //season start from 1 and episode staart from 0th index [season][episode]
-
-  const size = Object.keys(seasons).length;
-  console.log("Size of seasons object:", size);
-
-  let index = shows.findIndex((show) =>
-    show.title.toLowerCase().includes(item.title.toLowerCase())
-  );
-
-  for (let a = 1; a <= number_of_seasons; a++) {
-    const API_ENDPOINT2 = `https://api.themoviedb.org/3/tv/${item.id}/season/${a}?&api_key=d159eaf1a8e9ef27976592ad48ed5a2a`;
-
+  // Only fetch data for the selected season
+  if (selectedSeason > 0 && selectedSeason <= number_of_seasons) {
+    console.log("Hello 5");
     try {
+      const API_ENDPOINT2 = `https://api.themoviedb.org/3/tv/${item.id}/season/${selectedSeason}?&api_key=${API_KEY}`;
       const response = await fetch(API_ENDPOINT2);
       const data = await response.json();
-      const episodesArr = data.episodes;
-      seasons[a] = episodesArr; //setting the episode array to season index for example season 1 whole episodes
+      seasons[selectedSeason] = data.episodes;
 
-      console.log("index : ", index);
-      for (let i = 0; i < seasons[a].length; i++) {
-        //run till season length, setting link of each episode for that whole season
-        seasons[a][i].link = shows[index].link;
-        seasons[a][i].title = shows[index].title;
-        index++;
-      }
+      // Add link and title information
+      seasons[selectedSeason].forEach((episode, i) => {
+        let seasonNo =
+          selectedSeason < 10 ? `0${selectedSeason}` : selectedSeason;
+        let episodenNo = i < 9 ? `0${i + 1}` : i + 1;
+        const nn = `${item.title.toLowerCase()}s${seasonNo} e${episodenNo}`;
+        let index2 = shows.findIndex((show) =>
+          show.title.toLowerCase().includes(nn.toLowerCase())
+        );
+        episode.link = shows[index2]?.link;
+        episode.title = shows[index2]?.title;
+        console.log("Hello 6");
+      });
     } catch (error) {
       console.error("Error fetching episode information:", error);
       errorArray.push(item);
+      console.log("Hello 7");
     }
   }
+
   return seasons;
 };

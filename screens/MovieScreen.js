@@ -42,7 +42,7 @@ function MovieScreen({ route, navigation }) {
             <View style={styles.inlineContainer}>
               <Text style={styles.text}>Genre: </Text>
               <Text style={styles.text2}>
-                {item?.genreNames.slice(0, 2).join(", ")}
+                {item?.genreNames?.slice(0, 2).join(", ")}
               </Text>
               <Text style={styles.text2}></Text>
             </View>

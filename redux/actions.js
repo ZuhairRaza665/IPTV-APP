@@ -14,8 +14,8 @@ export const UPDATE_CONTINUE_WATCHING = "UPDATE_CONTINUE_WATCHING";
 
 export const addLikedItem = (item) => {
   if (item.title != null) {
-    // console.log("item being liked: ", item.title);
-    updateUserLikedArray(item.title, "add");
+    // // console.log("item being liked: ", item.title);
+    updateUserLikedArray(item, "add");
   }
   return {
     type: ADD_LIKED_ITEM,
@@ -25,8 +25,8 @@ export const addLikedItem = (item) => {
 
 export const removeLikedItem = (item) => {
   if (item.id != null) {
-    // console.log("item being liked: ", item.title);
-    updateUserLikedArray(item.title, "remove");
+    // // console.log("item being liked: ", item.title);
+    updateUserLikedArray(item, "remove");
   }
   return {
     type: REMOVE_LIKED_ITEM,
@@ -41,7 +41,7 @@ export const addLikedMovies = (likedMovies) => ({
 
 export const addToContinueWatching = (item, continueFrom) => {
   // if (item.id != null) {
-  //   console.log("Entering addtoWatiching");
+  //   // console.log("Entering addtoWatiching");
   //   updateContinueWatching(item.title, continueFrom, null);
   // }
   return {
@@ -73,7 +73,7 @@ export const updateContinueWatchingInRedux = (newContinueWatchingArray) => {
 
 // export const updateContinueWatchingItem = (item, time) => {
 //   if (item.title != null) {
-//     console.log("Entering update Continue Watching");
+//     // console.log("Entering update Continue Watching");
 //     updateContinueWatching(item.title, time, null);
 //   }
 //   return {

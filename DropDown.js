@@ -27,7 +27,7 @@ const CustomDropdown = ({ options, onOptionSelect }) => {
   };
 
   const length = Object.keys(options).length;
-  console.log("length from inside: ", length);
+  // console.log("length from inside: ", length);
 
   let dropdownOptions = options;
   if (selectedOption?.value === options[0]?.value) {
@@ -37,7 +37,9 @@ const CustomDropdown = ({ options, onOptionSelect }) => {
   return (
     <View style={styles.container}>
       <View style={styles.dropdownButton} onTouchStart={toggleDropdown}>
-        <Text style={styles.dropdownButtonText}>{selectedOption?.label}</Text>
+        <Text style={styles.dropdownButtonText}>
+          {selectedOption ? selectedOption.label : "Season 1"}
+        </Text>
         <Icon
           name={"angle-down"} // Adjust icon names
           size={18}

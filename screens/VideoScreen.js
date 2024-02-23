@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, ActivityIndicator, Text } from "react-native";
 import { Video } from "expo-av";
-import * as ScreenOrientation from "expo-screen-orientation";
+//import * as ScreenOrientation from "expo-screen-orientation";
 import { updateContinueWatching } from "../updateUserLikedArray";
 import { useDispatch } from "react-redux";
 
@@ -15,8 +15,8 @@ const VideoScreen = ({ route }) => {
   const dispatch = useDispatch();
 
   console.log("Item link: ", item.link);
-  console.log("Item title: ", item.title);
-  console.log("Videos time: ", time);
+  // console.log("Item title: ", item.title);
+  // console.log("Videos time: ", time);
 
   const handleVideoLoad = () => {
     setIsLoading(false);
@@ -37,7 +37,7 @@ const VideoScreen = ({ route }) => {
 
     if (status.isPlaying) {
       // Log the video time when paused or stopped
-      // console.log("Video time: ", status.positionMillis);
+      // // console.log("Video time: ", status.positionMillis);
       updateContinueWatching(item, status.positionMillis, null, dispatch);
     }
   };

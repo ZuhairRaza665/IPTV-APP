@@ -12,7 +12,7 @@ const SignOutScreen = ({ navigation }) => {
   async function deleteAsync(key) {
     try {
       await AsyncStorage.removeItem(key);
-      console.log("Movies data deleted successfully");
+      // console.log(`${key} data deleted successfully`);
     } catch (error) {
       console.error("Error deleting movies data", error);
     }
@@ -25,8 +25,7 @@ const SignOutScreen = ({ navigation }) => {
     deleteAsync("userToken");
     deleteAsync("loginStatus");
 
-    deleteLogin();
-    console.log("deleted aysnc");
+    // console.log("deleted aysnc");
 
     Alert.alert("Signing Out", "Are you sure you want to sign out?", [
       {

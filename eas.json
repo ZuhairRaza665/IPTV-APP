@@ -1,0 +1,11 @@
+{
+  "build": {
+    "release": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease",
+        "distribution": "internal",
+        "applicationArchivePath": "./android/app/build/outputs/apk/release/app-release.apk"
+      }
+    }
+  }
+}

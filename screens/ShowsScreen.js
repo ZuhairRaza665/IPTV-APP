@@ -19,110 +19,81 @@ const screenWidth = Dimensions.get("window").width;
 
 function ShowsScreen({ route, navigation }) {
   const { item } = route.params;
-  const [selectedOption, setSelectedOption] = useState(1);
+  const [selectedSeason, setSelectedSeason] = useState(1);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
-  const [options, setOptions] = useState([]);
   const [iniOptions, setIniOptions] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [totalSeasons, setTotalSeasons] = useState();
 
-  // const options = [
-  //   { value: "1", label: "Option 1" },
-  //   { value: "2", label: "Option 2" },
-  //   { value: "3", label: "Option 3" },
-  // ];
+  useEffect(() => {
+    console.log("Total seasons from shows screen: ", totalSeasons);
+  }, [totalSeasons]);
+
+  useEffect(() => {
+    const generatedOptions = [];
+    for (let i = 1; i <= totalSeasons; i++) {
+      generatedOptions.push({
+        value: i,
+        label: `Season ${i}`,
+      });
+    }
+    setOptions(generatedOptions);
+  }, [totalSeasons]);
+
+  useEffect(() => {
+    fetchSeasonDetails();
+    setIniOptions(true);
+  }, [selectedSeason]);
 
   const fetchSeasonDetails = async () => {
-    const demoVariable = await fetchOneShowsSeason(item);
-    // console.log("season 1 episode 1 from showsScreem: ", demoVariable);
+    console.log("item: ", item);
+    console.log("selectedSeason: ", selectedSeason);
+
+    const demoVariable = await fetchOneShowsSeason(
+      item,
+      selectedSeason,
+      setTotalSeasons
+    );
+    console.log("season 1 episode 1 from showsScreem: ", demoVariable);
     setData(demoVariable);
   };
 
   useEffect(() => {
-    if (item.id) {
-      fetchSeasonDetails();
-      console.log("Done fetching");
-      setIniOptions(true);
-    } else {
-      let allEpisodes = [];
-      let firstIndex = null;
-      let lastIndex = null;
+    let allEpisodes = [];
+    let firstIndex = null;
+    let lastIndex = null;
 
-      shows.forEach((show, index) => {
-        if (show.title.includes(item.title)) {
-          if (firstIndex === null) {
-            firstIndex = index;
-          }
-          lastIndex = index;
+    shows.forEach((show, index) => {
+      if (show.title.includes(item.title)) {
+        if (firstIndex === null) {
+          firstIndex = index;
         }
-      });
-
-      for (let a = firstIndex; a <= lastIndex; a++) {
-        allEpisodes.push(shows[a]);
+        lastIndex = index;
       }
+    });
 
-      console.log("Last index: ", shows[lastIndex]);
-
-      // console.log("All Episodes: ", allEpisodes);
-      setData(allEpisodes);
-
-      let newArray1 = [];
-      for (let i = firstIndex; i <= lastIndex; i++) {
-        const episodeIndex = shows[i].title.indexOf("E01");
-        let seasonNumber = shows[i].title.substring(
-          episodeIndex - 3,
-          episodeIndex - 1
-        );
-
-        if (parseInt(seasonNumber) < 10) {
-          seasonNumber = seasonNumber.substring(1);
-        }
-
-        if (!newArray1.some((item) => item.value === `${seasonNumber}`)) {
-          if (seasonNumber !== "") {
-            newArray1.push({
-              value: `${seasonNumber}`,
-              label: `Season ${seasonNumber}`,
-            });
-          }
-        }
-      }
-
-      // console.log("First index: ", shows[firstIndex]);
-      // console.log("Last index: ", shows[lastIndex]);
-      // console.log("Array is: ", newArray1);
-
-      setOptions(newArray1);
+    for (let a = firstIndex; a <= lastIndex; a++) {
+      allEpisodes.push(shows[a]);
     }
 
+    // console.log("Last index: ", shows[lastIndex]);
+
+    // // console.log("All Episodes: ", allEpisodes);
+    setData(allEpisodes);
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    if (iniOptions) {
-      // console.log("Data: ", data[1][1]);
-      const length = Object.keys(data).length;
-      // console.log("length 1: ", length);
-
-      // Generate options based on the length of data
-      const generatedOptions = Array.from({ length }, (_, index) => ({
-        value: (index + 1).toString(),
-        label: `Season ${index + 1}`,
-      }));
-
-      setOptions(generatedOptions); // Update the options
-    }
-  }, [data]);
-
   // useEffect(() => {
-  //   console.log("Data is 21e1: ", data);
+  //   // console.log("Data is 21e1: ", data);
   // }, [data]);
 
   // useEffect(() => {
-  //   console.log("options: ", options);
+  //   // console.log("options: ", options);
   // }, [options]);
 
-  const handleOptionSelect = (selectedOption) => {
-    setSelectedOption(selectedOption);
+  const handleOptionSelect = (selectedSeason) => {
+    setSelectedSeason(selectedSeason);
   };
 
   return (
@@ -204,24 +175,20 @@ function ShowsScreen({ route, navigation }) {
               </Text>
             </View>
           </View>
-          {options.length > 0 && (
-            <View style={{ top: 30 }}>
-              <View>
-                <DropDown
-                  options={options}
-                  onOptionSelect={handleOptionSelect}
-                />
-              </View>
-              <View>
-                <ShowsCard
-                  data={iniOptions ? data[selectedOption] : data}
-                  navigation={navigation}
-                  iniOptions={iniOptions}
-                />
-                <Text style={{ fontSize: 50 }}>Hello</Text>
-              </View>
+
+          <View style={{ top: 30 }}>
+            <View>
+              <DropDown options={options} onOptionSelect={handleOptionSelect} />
             </View>
-          )}
+            <View>
+              <ShowsCard
+                data={iniOptions ? data[selectedSeason] : data}
+                navigation={navigation}
+                iniOptions={iniOptions}
+              />
+              <Text style={{ fontSize: 50 }}>Hello</Text>
+            </View>
+          </View>
         </ScrollView>
       )}
     </View>

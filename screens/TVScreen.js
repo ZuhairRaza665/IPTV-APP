@@ -11,7 +11,7 @@ import {
 const TVScreen = ({ navigation }) => {
   const handleOnPress = (item) => {
     const link = item.link || null;
-    console.log("item: ", link);
+    // console.log("item: ", link);
     navigation.navigate("VideoScreen", { link });
   };
 

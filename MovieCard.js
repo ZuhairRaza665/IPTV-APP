@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { addLikedItem, removeLikedItem } from "./redux/actions";
-import { showsName } from "./api";
+import { movies, showsName } from "./api";
 import LottieView from "lottie-react-native"; // Import LottieView
 import { auth, db } from "./firebase"; // Import the Firebase initialization
 import {
@@ -46,7 +46,7 @@ const MovieCard = ({
   };
 
   // useEffect(() => {
-  //   console.log("Movies Card 1st index: ", bigData[0]);
+  //   // console.log("Movies Card 1st index: ", bigData[0]);
   // }, []);
 
   const getTime = async (title) => {
@@ -71,11 +71,11 @@ const MovieCard = ({
           }
         });
 
-        console.log("Index is: ", itemIndex);
+        // console.log("Index is: ", itemIndex);
 
         if (exist) {
           let oldTime = userData["Continue Watching"][itemIndex].time;
-          console.log("time from old time: ", oldTime);
+          // console.log("time from old time: ", oldTime);
           return oldTime;
         }
       }
@@ -89,25 +89,26 @@ const MovieCard = ({
       try {
         const time = await getTime(item.title);
         if (time) {
-          console.log("Time 123: ", time);
+          // console.log("Time 123: ", time);
           navigation.navigate("VideoScreen", { item, time });
         } else {
           let time2 = 0;
-          console.log("Time 123: ", time);
+          // console.log("Time 123: ", time);
           navigation.navigate("VideoScreen", { item, time2 });
         }
       } catch (error) {
         // console.error("Error getting time:", error);
       }
     } else {
-      const matchingShow = showsName.find((show) => show.id === item.id);
+      const matchingMovie = movies.find((movie) => movie.title === item.title);
 
-      if (matchingShow) {
-        // console.log("entering showsnam: ");
-        navigation.navigate("ShowsScreen", { item, navigation });
-      } else {
-        // console.log("entering movies: ");
+      if (matchingMovie) {
+        // // console.log("entering movies: ");
         navigation.navigate("MovieScreen", { item });
+      } else {
+        // // console.log("entering showsnam: ");
+        console.log("item is: ", item);
+        navigation.navigate("ShowsScreen", { item, navigation });
       }
     }
   };
@@ -180,7 +181,7 @@ const MovieCard = ({
 
   return (
     <FlatList
-      data={bigData?.length > 10 ? bigData.slice(0, 10) : bigData}
+      data={bigData?.length > 10 ? bigData?.slice(0, 10) : bigData}
       renderItem={renderItem}
       keyExtractor={(item) => item?.title}
       horizontal={true}

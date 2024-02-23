@@ -17,7 +17,7 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
 } from "react-native-reanimated";
-import { fetchData, movies, showsName, shows } from "../api";
+import { fetchData, movies, showsName, shows, tv } from "../api";
 import {
   fData,
   getLikedData,
@@ -40,6 +40,8 @@ import { collection, doc, getDocs, getDoc, setDoc } from "firebase/firestore"; /
 import { store } from "../redux/store";
 import { errorArray, uniqueErrorArray } from "../MovieDetailsRequest";
 
+import { retrieveLargeData } from "../api";
+
 export let loginStatus = "false";
 
 const LoginScreen = ({ navigation }) => {
@@ -59,6 +61,11 @@ const LoginScreen = ({ navigation }) => {
 
   const autoLogin = () => {
     // Simulate a button press by calling the LoginBtnHandle function
+    // const data = retrieveLargeData();
+
+    // if (data.length > 0) {
+    //   // console.log("retrieveLargeData: ", data.slice(0, 100));
+    // }
     LoginBtnHandle(true);
   };
 
@@ -75,12 +82,12 @@ const LoginScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    console.log("login status from useeffect: ", loginStatus);
+    // console.log("login status from useeffect: ", loginStatus);
     if (loginStatus === "true") autoLogin();
   }, [loginStatus]);
 
   useEffect(() => {
-    // console.log("Liked array getting updated");
+    // // console.log("Liked array getting updated");
     setRefresh(true);
   }, [refresh]);
 
@@ -91,6 +98,7 @@ const LoginScreen = ({ navigation }) => {
         `${username}@yourdomainname.com`,
         `${password}`
       );
+      // console.log("signing in");
       return auth.currentUser.uid;
     } catch (loginError) {
       return null;
@@ -104,6 +112,7 @@ const LoginScreen = ({ navigation }) => {
         `${username}@yourdomainname.com`,
         `${password}`
       );
+      // console.log("signing up");
       return userCredentials.user.uid;
     } catch (createUserError) {
       return null;
@@ -129,12 +138,12 @@ const LoginScreen = ({ navigation }) => {
         }
       }
     } else {
-      const usernameIndex = textInputValue.indexOf("username=") + 9;
-      const passwordIndex = textInputValue.indexOf("password=") + 9;
-      const passwordEndIndex = textInputValue.indexOf("&", passwordIndex);
+      const usernameIndex = textInputValue?.indexOf("username=") + 9;
+      const passwordIndex = textInputValue?.indexOf("password=") + 9;
+      const passwordEndIndex = textInputValue?.indexOf("&", passwordIndex);
       const username = textInputValue.substring(
         usernameIndex,
-        textInputValue.indexOf("&", usernameIndex)
+        textInputValue?.indexOf("&", usernameIndex)
       );
       const password = textInputValue.substring(
         passwordIndex,
@@ -166,7 +175,7 @@ const LoginScreen = ({ navigation }) => {
 
   const fetchDataAndProcess = async () => {
     try {
-      // console.log("textInputValue changed:", textInputValue);
+      // // console.log("textInputValue changed:", textInputValue);
 
       const data = await fetchData(textInputValue);
       setApiData(data);
@@ -177,85 +186,85 @@ const LoginScreen = ({ navigation }) => {
         return; // Exit the function
       }
 
-      console.log("API DATA: ", data.slice(0, 10));
+      // // console.log("API DATA: ", data.slice(0, 10));
 
-      const storedData = await AsyncStorage.getItem("movies");
+      // const storedData = await AsyncStorage.getItem("movies");
 
-      if (storedData) {
-        // console.log("Fetching data from local storage movies array");
-        // console.log("Movies length before:  ", movies.length);
-        // console.log("movies stored data: ", movies[100]);
-        // console.log("Show name stored data: ", showsName[100]);
-        const parsedStoredData = JSON.parse(storedData);
+      // if (storedData) {
+      //   // // console.log("Fetching data from local storage movies array");
+      //   // // console.log("Movies length before:  ", movies.length);
+      //   // // console.log("movies stored data: ", movies[100]);
+      //   // // console.log("Show name stored data: ", showsName[100]);
+      //   const parsedStoredData = JSON.parse(storedData);
 
-        parsedStoredData.forEach((storedItem, index) => {
-          movies[index] = storedItem;
-        });
+      //   parsedStoredData.forEach((storedItem, index) => {
+      //     movies[index] = storedItem;
+      //   });
 
-        // console.log("demo stored data: ", parsedStoredData[2131]);
-        // console.log("movies chached stored data: ", movies[2131]);
-        // console.log("Movies length after:  ", movies.length);
-      } else {
-        console.log("movies 0th index: ", movies[0]);
-        if (movies[0] != null) {
-          // console.log("Logging movies 0 from login screen: ", movies[0]);
-          await fData();
-          // console.log("Movie 1: ", movies[movies.length]);
-          // console.log("Movie 2: ", movies[movies.length - 1]);
-          // console.log("Movie 3: ", movies[movies.length - 50]);
+      //   // // console.log("demo stored data: ", parsedStoredData[2131]);
+      //   // // console.log("movies chached stored data: ", movies[2131]);
+      //   // // console.log("Movies length after:  ", movies.length);
+      // } else {
+      //   // console.log("movies 0th index: ", movies[0]);
+      //   if (movies[0] != null) {
+      //     // // console.log("Logging movies 0 from login screen: ", movies[0]);
+      //     await fData();
+      //     // // console.log("Movie 1: ", movies[movies.length]);
+      //     // // console.log("Movie 2: ", movies[movies.length - 1]);
+      //     // // console.log("Movie 3: ", movies[movies.length - 50]);
 
-          try {
-            await AsyncStorage.setItem("movies", JSON.stringify(movies));
-            // console.log("movies array stored in AsyncStorage");
-          } catch (error) {
-            console.error("Error storing movies array:", error);
-          }
-        } else {
-          console.log("API not working 1");
-        }
-      }
+      //     try {
+      //       await AsyncStorage.setItem("movies", JSON.stringify(movies));
+      //       // // console.log("movies array stored in AsyncStorage");
+      //     } catch (error) {
+      //       console.error("Error storing movies array:", error);
+      //     }
+      //   } else {
+      //     // console.log("API not working 1");
+      //   }
+      // }
 
-      const storedData2 = await AsyncStorage.getItem("showsName");
-      let showNameAsync = [];
+      // const storedData2 = await AsyncStorage.getItem("showsName");
+      // let showNameAsync = [];
 
-      if (storedData2) {
-        // console.log("Fetching data from local storage local shownName array");
-        // console.log("showsName length before:  ", showsName.length);
-        // console.log("showsName stored data: ", showsName[100]);
-        // console.log("Show name stored data: ", showsName[100]);
-        const parsedStoredData = JSON.parse(storedData2);
-        showNameAsync = parsedStoredData;
+      // if (storedData2) {
+      //   // // console.log("Fetching data from local storage local shownName array");
+      //   // // console.log("showsName length before:  ", showsName.length);
+      //   // // console.log("showsName stored data: ", showsName[100]);
+      //   // // console.log("Show name stored data: ", showsName[100]);
+      //   const parsedStoredData = JSON.parse(storedData2);
+      //   showNameAsync = parsedStoredData;
 
-        parsedStoredData.forEach((storedItem, index) => {
-          showsName[index] = storedItem;
-        });
+      //   parsedStoredData.forEach((storedItem, index) => {
+      //     showsName[index] = storedItem;
+      //   });
 
-        // console.log("demo stored data: ", parsedStoredData[2131]);
-        // console.log("showsName chached stored data: ", showsName[2131]);
-        // console.log("showsName length after:  ", showsName.length);
-      } else {
-        if (showsName[0] != null) {
-          // console.log("Logging showsName 0 from login screen: ", showsName[0]);
-          await fData2();
-          // console.log("showsName 1: ", showsName[showsName.length]);
-          // console.log("showsName 2: ", showsName[showsName.length - 1]);
-          // console.log("showsName 3: ", showsName[showsName.length - 50]);
+      //   // // console.log("demo stored data: ", parsedStoredData[2131]);
+      //   // // console.log("showsName chached stored data: ", showsName[2131]);
+      //   // // console.log("showsName length after:  ", showsName.length);
+      // } else {
+      //   if (showsName[0] != null) {
+      //     // // console.log("Logging showsName 0 from login screen: ", showsName[0]);
+      //     await fData2();
+      //     // // console.log("showsName 1: ", showsName[showsName.length]);
+      //     // // console.log("showsName 2: ", showsName[showsName.length - 1]);
+      //     // // console.log("showsName 3: ", showsName[showsName.length - 50]);
 
-          try {
-            await AsyncStorage.setItem("showsName", JSON.stringify(showsName));
-            // console.log("showsName array stored in AsyncStorage");
-          } catch (error) {
-            console.error("Error storing showsName array:", error);
-          }
-        } else {
-          console.log("API not working 2");
-        }
-      }
+      //     try {
+      //       await AsyncStorage.setItem("showsName", JSON.stringify(showsName));
+      //       // // console.log("showsName array stored in AsyncStorage");
+      //     } catch (error) {
+      //       console.error("Error storing showsName array:", error);
+      //     }
+      //   } else {
+      //     // console.log("API not working 2");
+      //   }
+      // }
 
       if (auth.currentUser) {
-        // console.log("Entering uid ");
+        // // console.log("Entering uid ");
         const userId = auth.currentUser.uid;
-        // console.log("Logggin from login screen the userid: ", userId);
+        // // console.log("Logggin from login screen the userid: ", userId);
 
         if (userId) {
           // Reference to the user's document
@@ -271,35 +280,75 @@ const LoginScreen = ({ navigation }) => {
             if (userId) {
               await getLikedData(likedList, dispatch, setRefresh);
             }
-            // console.log("User's liked list from sign in:", likedList);
-            // console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
+            // // console.log("User's liked list from sign in:", likedList);
+            // // console.log("Updated Redux state:", store.getState().likedItems); // Log the updated state
           } else {
-            // console.log("User document not found:", userId);
+            // // console.log("User document not found:", userId);
           }
         } else {
-          console.log("The user doesnt exist");
+          // console.log("The user doesnt exist");
         }
       }
-      // console.log("errorArray: ", errorArray.length);
-      // console.log("uniqueErrorArray: ", uniqueErrorArray.length);
+      // // console.log("errorArray: ", errorArray.length);
+      // // console.log("uniqueErrorArray: ", uniqueErrorArray.length);
 
-      // const index = showsName.findIndex((show) =>
-      //   show.title.toLowerCase().includes("silicon valley")
-      // );
+      const index = showsName.findIndex((show) =>
+        show.title.toLowerCase().includes("silicon valley")
+      );
 
-      // let avf = {};
-      // const gettingData = async () => {
-      //   const abc = await fetchOneShowsSeason(showsName[index]);
-      //   console.log("abc: ", abc);
-      //   avf = abc;
-      // };
-      // gettingData();
+      let avf = {};
+      const gettingData = async () => {
+        const abc = await fetchOneShowsSeason(showsName[index]);
+        // console.log("abc: ", abc);
+        avf = abc;
+      };
+      gettingData();
 
-      // console.log("avf: ", avf);
-      // // console.log("Season 1 Episode 1: ", showsData);
-      // // console.log("Season 6 Episode 4: ", showsData[6][4]);
+      // // console.log("avf: ", avf);
+      // // // console.log("Season 1 Episode 1: ", showsData);
+      // // // console.log("Season 6 Episode 4: ", showsData[6][4]);
 
       await AsyncStorage.setItem("loginStatus", JSON.stringify("true"));
+
+      // const fetchData55 = async (dataType) => {
+      //   const retrievedData = await retrieveLargeData(dataType);
+
+      //   switch (dataType) {
+      //     case "movies":
+      //       movies = [...retrievedData];
+      //       break;
+      //     case "tv":
+      //       tv = [...retrievedData];
+      //       break;
+      //     case "shows":
+      //       shows = [...retrievedData];
+      //       break;
+      //     case "showsName":
+      //       showsName = [...retrievedData];
+      //       break;
+      //     default:
+      //       break;
+      //   }
+      // };
+
+      // await fetchData55("movies");
+      // await fetchData55("tv");
+      // await fetchData55("shows");
+      // await fetchData55("showsName");
+
+      // // console.log("Movie 1 from login: ", movies[1]);
+      // // console.log("showsName 1 from login: ", showsName[1]);
+
+      const searchLink = "/series/zuhair1210/103444873/529697.mkv";
+
+      const foundMovie = shows.find((movie) => movie.link.includes(searchLink));
+
+      if (foundMovie) {
+        console.log("Found Movie:", foundMovie);
+      } else {
+        console.log("Movie not found.");
+      }
+
       setloadingAnimation(false);
     } catch (error) {
       console.error("Error fetching or processing data:", error);
@@ -346,7 +395,7 @@ const LoginScreen = ({ navigation }) => {
   };
   const LoginBtnHandle = (isAuto) => {
     if (isAuto) {
-      console.log("Entering isAuto");
+      // console.log("Entering isAuto");
       setModalVisible(!isModalVisible);
       fetchDataAndProcess();
     } else {
@@ -361,9 +410,9 @@ const LoginScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (textInputValue.length > 0) {
-      console.log("textInputValue length > 0");
+      // console.log("textInputValue length > 0");
       handleLogin(false);
-      // console.log("data: ", apiData[0]);
+      // // console.log("data: ", apiData[0]);
     } else {
       handleLogin(true);
     }
@@ -441,7 +490,6 @@ const LoginScreen = ({ navigation }) => {
                   <LottieView
                     source={apiData.length > 0 ? DoneAnimation : ErrorAnimation}
                     autoPlay
-                    loop={false}
                     style={[
                       apiData.length > 0
                         ? styles.doneAnimation
@@ -450,16 +498,16 @@ const LoginScreen = ({ navigation }) => {
                     onAnimationFinish={moveUp}
                   />
                 </Animated.View>
-                {DoneAnimationCompleted && (
-                  <TouchableOpacity
-                    style={[
-                      apiData.length > 0 ? styles.doneBtn : styles.doneBtn2,
-                    ]}
-                    onPress={toggleModal}
-                  >
-                    <Text style={styles.doneBtnText}>Done</Text>
-                  </TouchableOpacity>
-                )}
+                {/* {DoneAnimationCompleted && ( */}
+                <TouchableOpacity
+                  style={[
+                    apiData.length > 0 ? styles.doneBtn : styles.doneBtn2,
+                  ]}
+                  onPress={() => toggleModal()}
+                >
+                  <Text style={styles.doneBtnText}>Done</Text>
+                </TouchableOpacity>
+                {/* )} */}
               </View>
             )}
           </View>

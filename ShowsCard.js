@@ -12,14 +12,17 @@ import {
 const screenWidth = Dimensions.get("window").width;
 
 const ShowsCard = ({ data, navigation, iniOptions }) => {
-  // console.log("Data from shows: ", data);
+  // console.log("Data from shows123: ", data);
   return (
     <FlatList
       data={data}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item }) => (
         <TouchableWithoutFeedback
-          onPress={() => navigation.navigate("VideoScreen", { item })}
+          onPress={() => {
+            console.log("Data from shows: ", item);
+            navigation.navigate("VideoScreen", { item });
+          }}
         >
           <View style={styles.container}>
             <View style={{ flexDirection: "row", flex: 1 }}>

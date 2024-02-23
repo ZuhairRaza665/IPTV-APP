@@ -8,9 +8,12 @@ import {
 } from "firebase/firestore"; // Import Firestore functions
 import { store } from "./redux/store";
 import { updateContinueWatchingInRedux } from "./redux/actions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const updateUserLikedArray = async (itemTitle, action) => {
-  const userID = auth.currentUser.uid.toString();
+  // console.log("Entering liked array");
+
+  const userID = await AsyncStorage.getItem("userToken");
 
   try {
     const userDocRef = doc(db, "users", userID);
@@ -22,6 +25,7 @@ export const updateUserLikedArray = async (itemTitle, action) => {
 
       if (action === "add") {
         // Update the 'liked' array with the new value
+        // console.log("adding");
         const newLikedArray = [...userData.liked, itemTitle];
         await updateDoc(userDocRef, { liked: newLikedArray });
       } else if (action === "remove") {
@@ -75,13 +79,13 @@ export const updateContinueWatching = async (
           }
         });
 
-        console.log("Index is: ", itemIndex);
+        // console.log("Index is: ", itemIndex);
 
         if (exist) {
           //updating
-          console.log("entering update");
+          // console.log("entering update");
           let oldTime = userData["Continue Watching"][itemIndex].time;
-          // console.log("Index time: ", oldTime);
+          // // console.log("Index time: ", oldTime);
 
           if (newTimeValue > oldTime) {
             const updatedContinueWatching = [...userData["Continue Watching"]];
@@ -93,7 +97,7 @@ export const updateContinueWatching = async (
           }
         } else {
           //adding
-          console.log("entering adding");
+          // console.log("entering adding");
           if (newTimeValue > 0) {
             const newContinueWatchingArray = [
               ...continueWatchingArray,
@@ -123,9 +127,9 @@ export const updateContinueWatching = async (
         }
       }
 
-      // console.log("Liked array updated for user:", userID);
+      // // console.log("Liked array updated for user:", userID);
     } else {
-      // console.log("User document not found:", userID);
+      // // console.log("User document not found:", userID);
     }
   } catch (error) {
     console.error("Error updating liked array:", error);
