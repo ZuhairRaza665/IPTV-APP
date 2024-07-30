@@ -40,7 +40,7 @@ import { collection, doc, getDocs, getDoc, setDoc } from "firebase/firestore"; /
 import { store } from "../redux/store";
 import { errorArray, uniqueErrorArray } from "../MovieDetailsRequest";
 
-import { retrieveLargeData } from "../api";
+// import { retrieveLargeData } from "../api";
 
 export let loginStatus = "false";
 
